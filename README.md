@@ -1,8 +1,14 @@
+<p align="center">
+  <a href="">
+    <img width="100" height="100" src="https://github.com/go-workflow/go-workflow/blob/master/images/go.jpg">
+  </a>
+</p>
+
 <h1 align="center"><bold>Go-Workflow</bold></h1>
 
 <p>go-workflow 是一个超轻量级的工作流引擎,基本架构同Activiti工作流有些相似，但是它更精简，更轻量，它是一个工作流微服务，具体案例详见：example.md</p>
 
-### 一、特点：
+# 一、特点：
 
   1.它是一个工作流微服务
 
@@ -10,7 +16,7 @@
   
   3.使用json数组替代bpmn来生成流程定义，简化流程定义的生成
 
-### 二、go-workflow框架
+# 二、go-workflow框架
 # 1.go-workflow 数据库设计
 # 1.1 流程定义表
   表 procdef 用于保存流程的配置，
