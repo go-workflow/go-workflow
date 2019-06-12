@@ -3,14 +3,12 @@
     <img width="200" height="200" src="https://github.com/go-workflow/go-workflow/blob/master/images/go.jpg">
   </a>
 </p>
-
-
 <p align="center">
-  <a href="https://travis-ci.org/vuetifyjs/vuetify">
-    <img src="https://img.shields.io/travis/vuetifyjs/vuetify/dev.svg" alt="travis ci badge">
+  <a href="https://www.apache.org/licenses/LICENSE-2.0.html">
+    <img src="https://img.shields.io/badge/license-Apache%202-4EB1BA.svg" alt="Apache">
   </a>
-  <a href="https://codecov.io/gh/vuetifyjs/vuetify">
-    <img src="https://img.shields.io/codecov/c/github/vuetifyjs/vuetify.svg" alt="Coverage">
+  <a href="http://img.shields.io/badge/go-documentation-blue.svg?style=flat-square)">
+    <img src="https://github.com/go-workflow/go-workflow/blob/master/EXAMPLE.md" alt="example">
   </a>
 </p>
 
