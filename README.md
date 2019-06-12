@@ -1,12 +1,16 @@
-go-workflow 是一个超轻量级的工作流引擎,基本架构同Activiti工作流有些相似，但是它更精简，更轻量，它是一个工作流微服务，具体案例详见：example.md
-# 一、特点：
+<h2 align="center">go-workflow</h2>
+
+<p>go-workflow 是一个超轻量级的工作流引擎,基本架构同Activiti工作流有些相似，但是它更精简，更轻量，它是一个工作流微服务，具体案例详见：example.md</p>
+
+### 一、特点：
+
   1.它是一个工作流微服务
 
   2.将所有的无关流程的数据，包括用户、用户组等信息从服务中解耦出去，go-workflow只纪录流程的流转
   
   3.使用json数组替代bpmn来生成流程定义，简化流程定义的生成
 
-# 二、go-workflow框架
+### 二、go-workflow框架
 # 1.go-workflow 数据库设计
 # 1.1 流程定义表
   表 procdef 用于保存流程的配置，
@@ -93,7 +97,7 @@ go-workflow 是一个超轻量级的工作流引擎,基本架构同Activiti工�
 
 # 1.6 历史数据表
   历史数据表包括 execution_history，identitylink_history，proc_inst_history，task_history这些表字段同正常的表相同，每天0点时，已经结束的流程数据会自动迁移过来
-# 2 流程的存储
+## 2 流程的存储
 # 2.1 添加流程资源
   启动 go-workflow 微服务后，可以在浏览器中输入：http://localhost:8080/workflow/procdef/save 进行存储
 
