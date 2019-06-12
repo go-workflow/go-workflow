@@ -4,8 +4,20 @@
   </a>
 </p>
 
+
+<p align="center">
+  <a href="https://travis-ci.org/vuetifyjs/vuetify">
+    <img src="https://img.shields.io/travis/vuetifyjs/vuetify/dev.svg" alt="travis ci badge">
+  </a>
+  <a href="https://codecov.io/gh/vuetifyjs/vuetify">
+    <img src="https://img.shields.io/codecov/c/github/vuetifyjs/vuetify.svg" alt="Coverage">
+  </a>
+</p>
+
+<br>
+
 <h1 align="center"><bold>Go-Workflow</bold></h1>
-[![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)]
+
 <p>go-workflow 是一个超轻量级的工作流引擎,基本架构同Activiti工作流有些相似，但是它更精简，更轻量，它是一个工作流微服务，具体案例详见：example.md</p>
 
 # 一、特点：
