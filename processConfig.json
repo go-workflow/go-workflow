@@ -1,0 +1,242 @@
+{
+  "name": "发起人",
+  "type": "start",
+  "nodeId": "开始",
+  "childNode": {
+    "type": "route",
+    "prevId": "sid-startevent",
+    "nodeId": "7e68_00d7",
+    "conditionNodes": [
+      {
+        "name": "条件1",
+        "type": "condition",
+        "prevId": "7e68_00d7",
+        "nodeId": "a8be_c6f5",
+        "properties": {
+          "conditions": [
+            [
+              {
+                "type": "dingtalk_actioner_range_condition",
+                "paramKey": "DDHolidayField-J2BWEN12__duration",
+                "paramLabel": "时长（天）",
+                "lowerBound": "10",
+                "upperBound": "",
+                "unit": "天",
+                "isEmpty": false
+              }
+            ]
+          ]
+        },
+        "childNode": {
+          "name": "审批人",
+          "type": "approver",
+          "prevId": "a8be_c6f5",
+          "nodeId": "sid-1234_5678",
+          "properties": {
+            "activateType": "ONE_BY_ONE",
+            "agreeAll": false,
+            "allowTaskAppend": false,
+            "allowTaskRedirect": true,
+            "actionerRules": [
+              {
+                "type": "target_manager",
+                "labelNames": "主管",
+                "labels": 427529103,
+                "isEmpty": false,
+                "memberCount": 1,
+                "actType": "or"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "name": "条件2",
+        "type": "condition",
+        "prevId": "7e68_00d7",
+        "nodeId": "49db_31b3",
+        "properties": {
+          "conditions": [
+            [
+              {
+                "type": "dingtalk_actioner_range_condition",
+                "paramKey": "DDHolidayField-J2BWEN12__duration",
+                "paramLabel": "时长（天）",
+                "lowerBound": "",
+                "upperBound": "10",
+                "unit": "天",
+                "isEmpty": false,
+                "lowerBoundNotEqual": "",
+                "upperBoundEqual": "",
+                "boundEqual": "",
+                "key": "l"
+              },
+              {
+                "type": "dingtalk_actioner_value_condition",
+                "paramKey": "DDHolidayField-J2BWEN12__options",
+                "paramLabel": "请假类型",
+                "paramValue": "",
+                "paramValues": [
+                  "年假"
+                ],
+                "oriValue": [
+                  "年假",
+                  "事假",
+                  "病假",
+                  "调休",
+                  "产假",
+                  "陪产假",
+                  "婚假",
+                  "例假",
+                  "丧假",
+                  "哺乳假"
+                ],
+                "isEmpty": false
+              }
+            ]
+          ]
+        },
+        "childNode": {
+          "name": "UNKNOWN",
+          "type": "approver",
+          "prevId": "49db_31b3",
+          "nodeId": "59df_acce",
+          "properties": {
+            "activateType": "ALL",
+            "agreeAll": false,
+            "actionerRules": [
+              {
+                "type": "target_label",
+                "labelNames": "财务",
+                "labels": 427529103,
+                "isEmpty": false,
+                "memberCount": 1,
+                "actType": "or"
+              }
+            ],
+            "noneActionerAction": "admin"
+          },
+          "childNode": {
+            "type": "route",
+            "prevId": "59df_acce",
+            "nodeId": "5a90_65f8",
+            "conditionNodes": [
+              {
+                "name": "条件1",
+                "type": "condition",
+                "prevId": "5a90_65f8",
+                "nodeId": "d757_1c62",
+                "properties": {
+                  "conditions": [
+                    [
+                      {
+                        "type": "dingtalk_actioner_value_condition",
+                        "paramKey": "DDHolidayField-J2BWEN12__options",
+                        "paramLabel": "请假类型",
+                        "paramValue": "",
+                        "paramValues": [
+                          "哺乳假"
+                        ],
+                        "oriValue": [
+                          "年假",
+                          "事假",
+                          "病假",
+                          "调休",
+                          "产假",
+                          "陪产假",
+                          "婚假",
+                          "例假",
+                          "丧假",
+                          "哺乳假"
+                        ],
+                        "isEmpty": false
+                      }
+                    ]
+                  ]
+                },
+                "childNode": {
+                  "name": "UNKNOWN",
+                  "type": "approver",
+                  "prevId": "d757_1c62",
+                  "nodeId": "146e_7dc5",
+                  "properties": {
+                    "activateType": "ALL",
+                    "agreeAll": false,
+                    "actionerRules": [
+                      {
+                        "type": "target_label",
+                        "labelNames": "人事",
+                        "labels": 427529104,
+                        "isEmpty": false,
+                        "memberCount": 1,
+                        "actType": "or"
+                      }
+                    ],
+                    "noneActionerAction": "admin"
+                  }
+                }
+              },
+              {
+                "name": "条件2",
+                "type": "condition",
+                "prevId": "5a90_65f8",
+                "nodeId": "0446_47db",
+                "properties": {
+                  "conditions": [
+                    [
+                      {
+                        "type": "dingtalk_actioner_value_condition",
+                        "paramKey": "DDHolidayField-J2BWEN12__options",
+                        "paramLabel": "请假类型",
+                        "paramValue": "",
+                        "paramValues": [
+                          "年假"
+                        ],
+                        "oriValue": [
+                          "年假",
+                          "事假",
+                          "病假",
+                          "调休",
+                          "产假",
+                          "陪产假",
+                          "婚假",
+                          "例假",
+                          "丧假",
+                          "哺乳假"
+                        ],
+                        "isEmpty": false
+                      }
+                    ]
+                  ]
+                },
+                "childNode": {
+                  "name": "UNKNOWN",
+                  "type": "approver",
+                  "prevId": "0446_47db",
+                  "nodeId": "e08e_4aff",
+                  "properties": {
+                    "activateType": "ALL",
+                    "agreeAll": false,
+                    "actionerRules": [
+                      {
+                        "type": "target_label",
+                        "labelNames": "财务",
+                        "labels": 427529103,
+                        "isEmpty": false,
+                        "memberCount": 1,
+                        "actType": "or"
+                      }
+                    ],
+                    "noneActionerAction": "auto"
+                  }
+                }
+              }
+            ],
+            "properties": {}
+          }
+        }
+      }
+    ],
+    "properties": {}
+  }
+}

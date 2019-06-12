@@ -1,0 +1,14 @@
+{
+  "Port": "8080",
+  "ReadTimeout": "5",
+  "WriteTimeout": "5",
+  "DbLogMode": "true",
+  "DbType": "mysql",
+  "DbName": "activiti",
+  "DbHost": "localhost",
+  "DbPort": "3306",
+  "DbUser": "root",
+  "DbPassword": "123",
+  "DbMaxIdleConns": "5",
+  "DbMaxOpenConns": "100"
+}
