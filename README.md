@@ -7,8 +7,8 @@
   <a href="https://www.apache.org/licenses/LICENSE-2.0.html">
     <img src="https://img.shields.io/badge/license-Apache%202-4EB1BA.svg" alt="Apache">
   </a>
-  <a href="http://img.shields.io/badge/go-documentation-blue.svg?style=flat-square">
-    <img src="https://github.com/go-workflow/go-workflow/blob/master/EXAMPLE.md" alt="example">
+  <a href="https://github.com/go-workflow/go-workflow/blob/master/EXAMPLE.md">
+    <img src="https://img.shields.io/badge/go-documentation-blue.svg?style=flat-square" alt="example">
   </a>
 </p>
 
