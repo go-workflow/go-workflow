@@ -1,4 +1,4 @@
-<h2 align="center">go-workflow</h2>
+<h1 align="center"><bold>Go-Workflow</bold></h1>
 
 <p>go-workflow 是一个超轻量级的工作流引擎,基本架构同Activiti工作流有些相似，但是它更精简，更轻量，它是一个工作流微服务，具体案例详见：example.md</p>
 
