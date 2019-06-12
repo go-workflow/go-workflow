@@ -1,11 +1,11 @@
 <p align="center">
   <a href="">
-    <img width="100" height="100" src="https://github.com/go-workflow/go-workflow/blob/master/images/go.jpg">
+    <img width="200" height="200" src="https://github.com/go-workflow/go-workflow/blob/master/images/go.jpg">
   </a>
 </p>
 
 <h1 align="center"><bold>Go-Workflow</bold></h1>
-
+[![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)]
 <p>go-workflow 是一个超轻量级的工作流引擎,基本架构同Activiti工作流有些相似，但是它更精简，更轻量，它是一个工作流微服务，具体案例详见：example.md</p>
 
 # 一、特点：
