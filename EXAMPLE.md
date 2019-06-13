@@ -2,7 +2,7 @@
 # 1.1 安装mysql 
   目前只支持mysql数据库，测试之前先安装好数据库
 # 1.2 docker 安装最新版 go-workflow 微服务
-docker run  -e DbType=mysql -e DbLogMode=false DbName=activiti -e DbHost=localhost -e DbUser=root -e DbPassword=123 -p 8080:8080 registry.cn-hangzhou.aliyuncs.com/mumushuiding/go-workflow
+docker run  -e DbType=mysql -e DbLogMode=false -e DbName=test -e DbHost=localhost -e DbUser=root -e DbPassword=123 -p 8080:8080 registry.cn-hangzhou.aliyuncs.com/mumushuiding/go-workflow:latest
 
 # 1.3 通过 go get 获取
 
