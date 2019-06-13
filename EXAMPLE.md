@@ -3,11 +3,17 @@
   目前只支持mysql数据库，测试之前先安装好数据库
 # 1.2 docker 安装最新版 go-workflow 微服务
 docker run  -e DbType=mysql -e DbLogMode=false DbName=activiti -e DbHost=localhost -e DbUser=root -e DbPassword=123 -p 8080:8080 registry.cn-hangzhou.aliyuncs.com/mumushuiding/go-workflow
+
 # 1.3 通过 go get 获取
+
  1.go get github.com/mumushuiding/go-workflow/releases
  2.进入根目录，打开config.json文件,修改数据库连接配置
  3. $ go build
  4. $ go-workflow.exe
+
+# 1.4 部署到 K8s
+
+请查阅根目录的 k8s.yaml 文件 ， 配置使用了Istio, 未使用Istio的请稍作修改
 
 # 2.流程存储
 # 2.1 存储流程定义。
@@ -17,7 +23,7 @@ docker run  -e DbType=mysql -e DbLogMode=false DbName=activiti -e DbHost=localho
 
   Post参数：
   
-  {"userid":"11025","name":"请假","company":"A公司","resource":{"name":"发起人","type":"start","nodeId":"sid-startevent","childNode":{"type":"route","prevId":"sid-startevent","nodeId":"8b5c_debb","conditionNodes":[{"name":"条件1","type":"condition","prevId":"8b5c_debb","nodeId":"da89_be76","properties":{"conditions":[[{"type":"dingtalk_actioner_value_condition","paramKey":"DDHolidayField-J2BWEN12__options","paramLabel":"请假类型","paramValue":"","paramValues":["年假"],"oriValue":["年假","事假","病假","调休","产假","婚假","例假","丧假"],"isEmpty":false}]]},"childNode":{"name":"UNKNOWN","type":"approver","prevId":"da89_be76","nodeId":"735c_0854","properties":{"activateType":"ONE_BY_ONE","agreeAll":false,"actionerRules":[{"type":"target_management","level":1,"isEmpty":false,"autoUp":true}],"noneActionerAction":"admin"}}},{"name":"条件2","type":"condition","prevId":"8b5c_debb","nodeId":"a97f_9517","properties":{"conditions":[[{"type":"dingtalk_actioner_value_condition","paramKey":"DDHolidayField-J2BWEN12__options","paramLabel":"请假类型","paramValue":"","paramValues":["调休"],"oriValue":["年假","事假","病假","调休","产假","婚假","例假","丧假"],"isEmpty":false}]]},"childNode":{"name":"UNKNOWN","type":"approver","prevId":"a97f_9517","nodeId":"5891_395b","properties":{"activateType":"ALL","agreeAll":true,"actionerRules":[{"type":"target_label","labelNames":"财务","labels":427529103,"isEmpty":false,"memberCount":2,"actType":"and"}],"noneActionerAction":"auto"}}}],"properties":{},"childNode":{"name":"UNKNOWN","type":"approver","prevId":"8b5c_debb","nodeId":"59ba_8815","properties":{"activateType":"ALL","agreeAll":true,"actionerRules":[{"type":"target_label","labelNames":"人事","labels":427529104,"isEmpty":false,"memberCount":1,"actType":"and"}],"noneActionerAction":"admin"}}}}}
+  {"userid":"11025","name":"请假","company":"A公司","resource":{"name":"发起人","type":"start","nodeId":"sid-startevent","childNode":{"type":"route","prevId":"sid-startevent","nodeId":"8b5c_debb","conditionNodes":[{"name":"条件1","type":"condition","prevId":"8b5c_debb","nodeId":"da89_be76","properties":{"conditions":[[{"type":"dingtalk_actioner_value_condition","paramKey":"DDHolidayField-J2BWEN12__options","paramLabel":"请假类型","paramValue":"","paramValues":["年假"],"oriValue":["年假","事假","病假","调休","产假","婚假","例假","丧假"],"isEmpty":false}]]},"childNode":{"name":"UNKNOWN","type":"approver","prevId":"da89_be76","nodeId":"735c_0854","properties":{"activateType":"ONE_BY_ONE","agreeAll":false,"actionerRules":[{"type":"target_management","level":1,"isEmpty":false,"autoUp":true}]}}},{"name":"条件2","type":"condition","prevId":"8b5c_debb","nodeId":"a97f_9517","properties":{"conditions":[[{"type":"dingtalk_actioner_value_condition","paramKey":"DDHolidayField-J2BWEN12__options","paramLabel":"请假类型","paramValue":"","paramValues":["调休"],"oriValue":["年假","事假","病假","调休","产假","婚假","例假","丧假"],"isEmpty":false}]]},"childNode":{"name":"UNKNOWN","type":"approver","prevId":"a97f_9517","nodeId":"5891_395b","properties":{"activateType":"ALL","agreeAll":true,"actionerRules":[{"type":"target_label","labelNames":"财务","labels":427529103,"isEmpty":false,"memberCount":2,"actType":"and"}],"noneActionerAction":"auto"}}}],"properties":{},"childNode":{"name":"UNKNOWN","type":"approver","prevId":"8b5c_debb","nodeId":"59ba_8815","properties":{"activateType":"ALL","agreeAll":true,"actionerRules":[{"type":"target_label","labelNames":"人事","labels":427529104,"isEmpty":false,"memberCount":1,"actType":"and"}]}}}}}
 
   如果返回：{"data":"1","ok":true} ，1表示流程实例的id,true表示成功了
 # 3.启动流程

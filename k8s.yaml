@@ -1,0 +1,87 @@
+###################################################
+# 工作流引擎 workflow
+##################################################
+apiVersion: v1
+kind: Service
+metadata:
+  name: workflow
+spec:
+  selector:
+    app: workflow
+  ports:
+  - port: 8080
+    name: http
+---
+# deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: workflow
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: workflow
+  template:
+    metadata:
+      labels:
+        app: workflow
+    spec:
+      containers:
+      - name: workflow
+        imagePullPolicy: Always
+        image: registry.cn-hangzhou.aliyuncs.com/mumushuiding/go-workflow
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8080
+        env:
+          - name: DbType
+            value: "mysql"
+          - name: DbLogMode
+            value: "false"
+          - name: DbName
+            value: workflow
+          - name: DbHost
+            value: localhost
+          - name: DbUser
+            value: root
+          - name: DbPassword
+            value: "123"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: workflow
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: http
+    hosts:
+    - workflow.prod.svc.cluster.local
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: workflow
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - workflow
+  http:
+  - match:
+    - uri:
+        prefix: /workflow
+    route:
+    - destination:
+        host: workflow
+        port:
+          number: 8080
+
