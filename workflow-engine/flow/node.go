@@ -9,6 +9,8 @@ import (
 	"os"
 	"strconv"
 	"time"
+
+	"github.com/mumushuiding/util"
 )
 
 // Node represents a specific logical unit of processing and routing
@@ -24,16 +26,24 @@ type Node struct {
 	Properties     *NodeProperties `json:"properties,omitempty"`
 }
 
+// ActionConditionType 条件类型
+type ActionConditionType int
+
 const (
-	// ActionerRangerCondition 条件类型: 范围
-	ActionerRangerCondition string = "dingtalk_actioner_range_condition"
-	// ActionerValueCondition 条件类型： 值
-	ActionerValueCondition string = "dingtalk_actioner_value_condition"
+	// RANGE 条件类型: 范围
+	RANGE ActionConditionType = iota
+	// VALUE 条件类型： 值
+	VALUE
 )
 
+// ActionConditionTypes 所有条件类型
+var ActionConditionTypes = [...]string{RANGE: "dingtalk_actioner_range_condition", VALUE: "dingtalk_actioner_value_condition"}
+
+// NodeType 节点类型
 type NodeType int
 
 const (
+	// START 类型start
 	START NodeType = iota
 	ROUTE
 	CONDITION
@@ -41,6 +51,7 @@ const (
 	NOTIFIER
 )
 
+// ActionRuleType 审批人类型
 type ActionRuleType int
 
 const (
@@ -149,6 +160,69 @@ func (n *Node) add2ExecutionList(list *list.List) {
 	}
 }
 
+// IfProcessConifgIsValid 检查流程配置是否有效
+func IfProcessConifgIsValid(node *Node) error {
+	// 节点名称是否有效
+	if len(node.NodeID) == 0 {
+		return errors.New("节点的【nodeId】不能为空！！")
+	}
+	// 检查类型是否有效
+	if len(node.Type) == 0 {
+		return errors.New("节点【" + node.NodeID + "】的类型【type】不能为空")
+	}
+	var flag = false
+	for _, val := range NodeTypes {
+		if val == node.Type {
+			flag = true
+			break
+		}
+	}
+	if !flag {
+		str, _ := util.ToJSONStr(NodeTypes)
+		return errors.New("节点【" + node.NodeID + "】的类型为【" + node.Type + "】，为无效类型,有效类型为" + str)
+	}
+	// 当前节点是否设置有审批人
+	if node.Type == NodeTypes[APPROVER] || node.Type == NodeTypes[NOTIFIER] {
+		if node.Properties == nil || node.Properties.ActionerRules == nil {
+			return errors.New("节点【" + node.NodeID + "】的Properties属性不能为空，如：`\"properties\": {\"actionerRules\": [{\"type\": \"target_label\",\"labelNames\": \"人事\",\"memberCount\": 1,\"actType\": \"and\"}],}`")
+		}
+	}
+	// 条件节点是否存在
+	if node.ConditionNodes != nil { // 存在条件节点
+		if len(node.ConditionNodes) == 1 {
+			return errors.New("节点【" + node.NodeID + "】条件节点下的节点数必须大于1")
+		}
+		// 根据条件变量选择节点索引
+		err := CheckConditionNode(node.ConditionNodes)
+		if err != nil {
+			return err
+		}
+	}
+
+	// 子节点是否存在
+	if node.ChildNode != nil {
+		return IfProcessConifgIsValid(node.ChildNode)
+	}
+	return nil
+}
+
+// CheckConditionNode 检查条件节点
+func CheckConditionNode(nodes []*Node) error {
+	for _, node := range nodes {
+		if node.Properties == nil {
+			return errors.New("节点【" + node.NodeID + "】的Properties对象为空值！！")
+		}
+		if len(node.Properties.Conditions) == 0 {
+			return errors.New("节点【" + node.NodeID + "】的Conditions对象为空值！！")
+		}
+		err := IfProcessConifgIsValid(node)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // ParseProcessConfig 解析流程定义json数据
 func ParseProcessConfig(node *Node, variable *map[string]string) (*list.List, error) {
 	// defer fmt.Println("----------解析结束--------")
@@ -158,7 +232,6 @@ func ParseProcessConfig(node *Node, variable *map[string]string) (*list.List, er
 }
 func parseProcessConfig(node *Node, variable *map[string]string, list *list.List) (err error) {
 	// fmt.Printf("nodeId=%s\n", node.NodeID)
-
 	node.add2ExecutionList(list)
 	// 存在条件节点
 	if node.ConditionNodes != nil {
@@ -170,9 +243,13 @@ func parseProcessConfig(node *Node, variable *map[string]string, list *list.List
 			}
 		} else {
 			// 根据条件变量选择节点索引
-			condNode, _ := getConditionNode(node.ConditionNodes, variable)
+			condNode, err := GetConditionNode(node.ConditionNodes, variable)
+			if err != nil {
+				return err
+			}
 			if condNode == nil {
-				return errors.New("节点【" + node.NodeID + "】找不到任务符合条件的子节点")
+				str, _ := util.ToJSONStr(variable)
+				return errors.New("节点【" + node.NodeID + "】找不到符合条件的子节点,检查变量【var】值是否匹配," + str)
 				// panic(err)
 			}
 			err = parseProcessConfig(condNode, variable, list)
@@ -190,44 +267,44 @@ func parseProcessConfig(node *Node, variable *map[string]string, list *list.List
 		}
 	}
 	return nil
-	// // 存在子节点
-	// if node.ChildNode != nil {
-	// 	return parseProcessConfig(node.ChildNode, variable, list)
-	// }
-	// // 无子节点和条件节点，结束
-	// if node.ConditionNodes == nil {
-	// 	return nil
-	// }
-	// // 存在条件节点
-	// // 条件变量为null,或者条件只有一个
-	// if variable == nil || len(node.ConditionNodes) == 1 {
-	// 	return parseProcessConfig(node.ConditionNodes[0].ChildNode, variable, list)
-	// }
-	// // 根据条件变量选择节点索引
-	// condNode, _ := getConditionNode(node.ConditionNodes, variable)
-	// if condNode == nil {
-	// 	return errors.New("节点【" + node.NodeID + "】找不到任务符合条件的子节点")
-	// 	// panic(err)
-	// }
-	// return parseProcessConfig(condNode, variable, list)
-	// return err
+}
+
+// GetConditionNode 获取条件节点
+func GetConditionNode(nodes []*Node, maps *map[string]string) (result *Node, err error) {
+	map2 := *maps
+	for _, node := range nodes {
+		var flag int
+		for _, v := range node.Properties.Conditions[0] {
+			paramValue := map2[v.ParamKey]
+			if len(paramValue) == 0 {
+				return nil, errors.New("流程启动变量【var】的key【" + v.ParamKey + "】的值不能为空")
+			}
+			yes, err := checkConditions(v, paramValue)
+			if err != nil {
+				return nil, err
+			}
+			if yes {
+				flag++
+			}
+		}
+		// fmt.Printf("flag=%d\n", flag)
+		// 满足所有条件
+		if flag == len(node.Properties.Conditions[0]) {
+			result = node
+		}
+	}
+	return result, nil
 }
 func getConditionNode(nodes []*Node, maps *map[string]string) (result *Node, err error) {
 	map2 := *maps
 	// 获取所有conditionNodes
-	getNodesChan := func(done <-chan interface{}) <-chan *Node {
+	getNodesChan := func() <-chan *Node {
 		nodesChan := make(chan *Node, len(nodes))
 		go func() {
 			// defer fmt.Println("关闭nodeChan通道")
 			defer close(nodesChan)
 			for _, v := range nodes {
-				select {
-				case <-done:
-					return
-				case <-time.After(1 * time.Second):
-					fmt.Println("Time out.")
-				case nodesChan <- v:
-				}
+				nodesChan <- v
 			}
 		}()
 		return nodesChan
@@ -287,7 +364,7 @@ func getConditionNode(nodes []*Node, maps *map[string]string) (result *Node, err
 	done := make(chan interface{})
 	// defer fmt.Println("结束所有goroutine")
 	defer close(done)
-	nodeStream := getNodesChan(done)
+	nodeStream := getNodesChan()
 	// for i := len(nodes); i > 0; i-- {
 	// 	getConditionNode(resultStream, nodeStream, done)
 	// }
@@ -313,10 +390,13 @@ func getConditionNode(nodes []*Node, maps *map[string]string) (result *Node, err
 func checkConditions(cond *NodeCondition, value string) (bool, error) {
 	// 判断类型
 	switch cond.Type {
-	case ActionerRangerCondition:
+	case ActionConditionTypes[RANGE]:
 		val, err := strconv.Atoi(value)
 		if err != nil {
 			return false, err
+		}
+		if len(cond.LowerBound) == 0 && len(cond.UpperBound) == 0 {
+			return false, errors.New("条件【" + cond.Type + "】的上限或者下限值不能全为空")
 		}
 		// 判断下限
 		if len(cond.LowerBound) > 0 {
@@ -341,9 +421,9 @@ func checkConditions(cond *NodeCondition, value string) (bool, error) {
 			}
 		}
 		return true, nil
-	case ActionerValueCondition:
+	case ActionConditionTypes[VALUE]:
 		if len(cond.ParamValues) == 0 {
-			return false, errors.New("processConfig paramValues参数不能为空")
+			return false, errors.New("条件节点【" + cond.Type + "】的 【paramValues】数组不能为空，值如：'paramValues:['调休','年假']")
 		}
 		for _, val := range cond.ParamValues {
 			if value == val {
@@ -353,6 +433,7 @@ func checkConditions(cond *NodeCondition, value string) (bool, error) {
 		// log.Printf("key:" + cond.ParamKey + "找不到对应的值")
 		return false, nil
 	default:
-		return false, errors.New("未知的NodeCondition类型【" + cond.Type + "】")
+		str, _ := util.ToJSONStr(ActionConditionTypes)
+		return false, errors.New("未知的NodeCondition类型【" + cond.Type + "】,正确类型应为以下中的一个:" + str)
 	}
 }

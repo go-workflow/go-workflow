@@ -78,6 +78,11 @@ func ExistsProcdefByNameAndCompany(name, company string) (yes bool, version int,
 
 // SaveProcdef 保存
 func (p *Procdef) SaveProcdef() (id int, err error) {
+	// 流程定义有效性检验
+	err = IsProdefValid(p.Resource)
+	if err != nil {
+		return 0, err
+	}
 	resource, err := util.ToJSONStr(p.Resource)
 	if err != nil {
 		return 0, err
@@ -143,4 +148,10 @@ func (p *Procdef) getMaps() map[string]interface{} {
 // DelProcdefByID del by id
 func DelProcdefByID(id int) error {
 	return model.DelProcdefByID(id)
+}
+
+// IsProdefValid 流程定义格式是否有效
+func IsProdefValid(node *flow.Node) error {
+
+	return flow.IfProcessConifgIsValid(node)
 }

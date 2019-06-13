@@ -1,11 +1,8 @@
 package flow
 
 import (
-	"encoding/hex"
 	"fmt"
 	"testing"
-
-	"github.com/mumushuiding/util"
 )
 
 // func TestSome(t *testing.T) {
@@ -16,12 +13,9 @@ import (
 // }
 
 func TestNode(t *testing.T) {
-	var node = Node{}
-	node.GetProcessConfigFromJSONFile()
-	result, _ := util.ToJSONStr(node)
-	fmt.Println(result)
-	x, _ := hex.DecodeString(result)
-	fmt.Printf("----%b", x)
+	for k, v := range NodeTypes {
+		fmt.Printf("key,value: %d,%s\n", k, v)
+	}
 }
 
 // func TestNodeGenerateNodeInfos(t *testing.T) {
