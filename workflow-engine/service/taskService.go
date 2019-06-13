@@ -129,7 +129,7 @@ func CompleteTaskTx(taskID int, userID, company string, pass bool, tx *gorm.DB) 
 	}
 	// 如果是会签
 	if task.ActType == "and" {
-		fmt.Println("------------------是会签，判断用户是否已经审批过了，避免重复审批-------")
+		// fmt.Println("------------------是会签，判断用户是否已经审批过了，避免重复审批-------")
 		// 判断用户是否已经审批过了（存在会签的情况）
 		yes, err := IfParticipantByTaskID(userID, company, taskID)
 		if err != nil {
@@ -166,31 +166,6 @@ func CompleteTaskTx(taskID int, userID, company string, pass bool, tx *gorm.DB) 
 
 // WithDrawTask 撤回任务
 func WithDrawTask(taskID, procInstID int, userID, company string) error {
-	// fmt.Println("撤回")
-	// // 是否可以撤回
-	// timesx := time.Now()
-	// currentTask, err := GetTaskByID(taskID)
-	// if err != nil {
-	// 	return err
-	// }
-	// myLastTask, err := GetTaskLatestByProInstIDAndAssignee(procInstID, userID)
-	// if err != nil {
-	// 	if err == gorm.ErrRecordNotFound {
-	// 		return errors.New("找不到曾经审批过的任务纪录，无权撤回")
-	// 	}
-	// 	return err
-	// }
-	// sub := currentTask.Step - myLastTask.Step
-	// if math.Abs(float64(sub)) != 1 {
-	// 	return errors.New("只能撤回相邻的任务！！")
-	// }
-	// var pass = false
-	// if sub < 0 {
-	// 	pass = true
-	// }
-	// fmt.Println(pass)
-	// fmt.Printf("判断是否可以撤回耗时：%v", time.Since(times))
-	// 是否可以撤回
 	var err1, err2 error
 	var currentTask, lastTask *model.Task
 	var timesx time.Time
@@ -218,6 +193,9 @@ func WithDrawTask(taskID, procInstID int, userID, company string) error {
 		}
 		return err2
 	}
+	if lastTask.Assignee != userID {
+		return errors.New("只能撤回本人审批过的任务！！")
+	}
 	if currentTask.IsFinished {
 		return errors.New("已经审批结束，无法撤回！")
 	}
@@ -228,14 +206,11 @@ func WithDrawTask(taskID, procInstID int, userID, company string) error {
 	if math.Abs(float64(sub)) != 1 {
 		return errors.New("只能撤回相邻的任务！！")
 	}
-	if lastTask.Assignee != userID {
-		return errors.New("只能撤回本人审批过的任务！！")
-	}
 	var pass = false
 	if sub < 0 {
 		pass = true
 	}
-	fmt.Printf("判断是否可以撤回耗时：%v\n", time.Since(timesx))
+	fmt.Printf("判断是否可以撤回,耗时：%v\n", time.Since(timesx))
 	timesx = time.Now()
 	tx := model.GetTx()
 	// 更新当前的任务
@@ -262,15 +237,45 @@ func MoveStageByProcInstID(userID, company string, taskID, procInstID, step int,
 	if err != nil {
 		return err
 	}
-	if pass {
-		return MoveToNextStage(nodeInfos, userID, company, taskID, procInstID, step, tx)
-	}
-	return MoveToPrevStage(nodeInfos, userID, company, taskID, procInstID, step, tx)
+	return MoveStage(nodeInfos, userID, company, taskID, procInstID, step, pass, tx)
 }
 
 // MoveStage MoveStage
-// 流转到下一个流程
+// 流程流转
 func MoveStage(nodeInfos []*flow.NodeInfo, userID, company string, taskID, procInstID, step int, pass bool, tx *gorm.DB) (err error) {
+	// 添加上一步的参与人
+	err = AddParticipantTx(userID, company, taskID, procInstID, step, tx)
+	if err != nil {
+		return err
+	}
+	if pass {
+		step++
+	} else {
+		step--
+	}
+	// 判断下一流程： 如果是审批人是：抄送人
+	// fmt.Printf("下一审批人类型：%s\n", nodeInfos[step].AproverType)
+	// fmt.Println(nodeInfos[step].AproverType == flow.NodeTypes[flow.NOTIFIER])
+	if nodeInfos[step].AproverType == flow.NodeTypes[flow.NOTIFIER] {
+		// 生成新的任务
+		var task = model.Task{
+			NodeID:     flow.NodeTypes[flow.NOTIFIER],
+			Step:       step,
+			ProcInstID: procInstID,
+			IsFinished: true,
+		}
+		task.IsFinished = true
+		_, err := task.NewTaskTx(tx)
+		if err != nil {
+			return err
+		}
+		// 添加抄送人
+		err = AddNotifierTx(nodeInfos[step].Aprover, company, step, procInstID, tx)
+		if err != nil {
+			return err
+		}
+		return MoveStage(nodeInfos, userID, company, taskID, procInstID, step, pass, tx)
+	}
 	if pass {
 		return MoveToNextStage(nodeInfos, userID, company, taskID, procInstID, step, tx)
 	}
@@ -280,8 +285,6 @@ func MoveStage(nodeInfos []*flow.NodeInfo, userID, company string, taskID, procI
 // MoveToNextStage MoveToNextStage
 //通过
 func MoveToNextStage(nodeInfos []*flow.NodeInfo, userID, company string, currentTaskID, procInstID, step int, tx *gorm.DB) error {
-	// 判断是否结束
-	step++
 	// fmt.Printf("-----------------流转到流程【%d】-----\n", step)
 	// fmt.Printf("step=%d,total=%d\n", step, len(nodeInfos))
 	if (step + 1) > len(nodeInfos) {
@@ -294,7 +297,7 @@ func MoveToNextStage(nodeInfos []*flow.NodeInfo, userID, company string, current
 		Candidate: nodeInfos[step].Aprover,
 	}
 	procInst.ID = procInstID
-	if (step + 1) != len(nodeInfos) {
+	if (step + 1) != len(nodeInfos) { // 下一步不是【结束】
 		// 生成新的任务
 		taksID, err := task.NewTaskTx(tx)
 		if err != nil {
@@ -334,10 +337,10 @@ func MoveToNextStage(nodeInfos []*flow.NodeInfo, userID, company string, current
 		}
 	}
 	// 添加上一步的参与人
-	err := AddParticipantTx(userID, company, currentTaskID, procInstID, step-1, tx)
-	if err != nil {
-		return err
-	}
+	// err := AddParticipantTx(userID, company, currentTaskID, procInstID, step-1, tx)
+	// if err != nil {
+	// 	return err
+	// }
 	return nil
 }
 
@@ -345,10 +348,9 @@ func MoveToNextStage(nodeInfos []*flow.NodeInfo, userID, company string, current
 // 驳回
 func MoveToPrevStage(nodeInfos []*flow.NodeInfo, userID, company string, currentTaskID, procInstID, step int, tx *gorm.DB) error {
 	// fmt.Printf("------------------流转到流程【%d】", step)
-	if step == 0 {
+	if step == -1 {
 		return errors.New("流程处于开始位置无法驳回！！")
 	}
-	step--
 	// 生成新的任务
 	var task = getNewTask(nodeInfos, step, procInstID, util.FormatDate(time.Now(), util.YYYY_MM_DD_HH_MM_SS)) //新任务
 	taksID, err := task.NewTaskTx(tx)
@@ -356,10 +358,10 @@ func MoveToPrevStage(nodeInfos []*flow.NodeInfo, userID, company string, current
 		return err
 	}
 	// 添加上一步的参与人
-	err = AddParticipantTx(userID, company, currentTaskID, procInstID, step+1, tx)
-	if err != nil {
-		return err
-	}
+	// err = AddParticipantTx(userID, company, currentTaskID, procInstID, step+1, tx)
+	// if err != nil {
+	// 	return err
+	// }
 	// 更新流程实例
 	var procInst = &model.ProcInst{ // 流程实例要更新的字段
 		NodeID:    nodeInfos[step].NodeID,

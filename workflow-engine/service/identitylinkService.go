@@ -1,13 +1,32 @@
 package service
 
 import (
-	"github.com/jinzhu/gorm"
 	"github.com/go-workflow/go-workflow/workflow-engine/model"
+	"github.com/jinzhu/gorm"
 )
 
 // SaveIdentitylinkTx SaveIdentitylinkTx
 func SaveIdentitylinkTx(i *model.Identitylink, tx *gorm.DB) error {
 	return i.SaveTx(tx)
+}
+
+// AddNotifierTx 添加抄送人候选用户组
+func AddNotifierTx(group, company string, step, procInstID int, tx *gorm.DB) error {
+	yes, err := ExistsNotifierByProcInstIDAndGroup(procInstID, group)
+	if err != nil {
+		return err
+	}
+	if yes {
+		return nil
+	}
+	i := &model.Identitylink{
+		Group:      group,
+		Type:       model.IdentityTypes[model.NOTIFIER],
+		Step:       step,
+		ProcInstID: procInstID,
+		Company:    company,
+	}
+	return SaveIdentitylinkTx(i, tx)
 }
 
 // AddCandidateGroupTx AddCandidateGroupTx
@@ -26,32 +45,6 @@ func AddCandidateGroupTx(group, company string, step, taskID, procInstID int, tx
 		Company:    company,
 	}
 	return SaveIdentitylinkTx(i, tx)
-	// var wg sync.WaitGroup
-	// var err1, err2 error
-	// numberOfRoutine := 2
-	// wg.Add(numberOfRoutine)
-	// go func() {
-	// 	defer wg.Done()
-	// 	err1 = DelCandidateByProcInstID(procInstID, tx)
-	// }()
-	// go func() {
-	// 	defer wg.Done()
-	// 	i := &model.Identitylink{
-	// 		Group:      group,
-	// 		Type:       model.IdentityTypes[model.CANDIDATE],
-	// 		TaskID:     taskID,
-	// 		Step:       step,
-	// 		ProcInstID: procInstID,
-	// 		Company:    company,
-	// 	}
-	// 	err2 = SaveIdentitylinkTx(i, tx)
-	// }()
-	// wg.Wait()
-	// fmt.Println("保存identyilink结束")
-	// if err1 != nil {
-	// 	return err1
-	// }
-	// return err2
 }
 
 // AddCandidateUserTx AddCandidateUserTx
@@ -122,4 +115,9 @@ func IfParticipantByTaskID(userID, company string, taskID int) (bool, error) {
 // 删除历史候选人
 func DelCandidateByProcInstID(procInstID int, tx *gorm.DB) error {
 	return model.DelCandidateByProcInstID(procInstID, tx)
+}
+
+// ExistsNotifierByProcInstIDAndGroup 抄送人是否已经存在
+func ExistsNotifierByProcInstIDAndGroup(procInstID int, group string) (bool, error) {
+	return model.ExistsNotifierByProcInstIDAndGroup(procInstID, group)
 }

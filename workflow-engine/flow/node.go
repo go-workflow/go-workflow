@@ -38,6 +38,7 @@ const (
 	ROUTE
 	CONDITION
 	APPROVER
+	NOTIFIER
 )
 
 type ActionRuleType int
@@ -47,7 +48,8 @@ const (
 	LABEL
 )
 
-var nodeTypes = [...]string{START: "start", ROUTE: "route", CONDITION: "condition", APPROVER: "approver"}
+// NodeTypes 节点类型
+var NodeTypes = [...]string{START: "start", ROUTE: "route", CONDITION: "condition", APPROVER: "approver", NOTIFIER: "notifier"}
 var actionRuleTypes = [...]string{MANAGER: "target_management", LABEL: "target_label"}
 
 type NodeInfoType int
@@ -107,13 +109,14 @@ type NodeInfo struct {
 	NodeID      string `json:"nodeId"`
 	Type        string `json:"type"`
 	Aprover     string `json:"approver"`
+	AproverType string `json:"aproverType"`
 	MemberCount int8   `json:"memberCount"`
 	ActType     string `json:"actType"`
 }
 
-// test
+// GetProcessConfigFromJSONFile test
 func (n *Node) GetProcessConfigFromJSONFile() {
-	file, err := os.Open("D:/Workspaces/go/src/github.com/mumushuiding/Activiti-go/processConfig2.json")
+	file, err := os.Open("D:/Workspaces/go/src/github.com/go-workflow/go-workflow/processConfig2.json")
 	if err != nil {
 		log.Printf("cannot open file processConfig.json:%v", err)
 		panic(err)
@@ -126,7 +129,7 @@ func (n *Node) GetProcessConfigFromJSONFile() {
 }
 func (n *Node) add2ExecutionList(list *list.List) {
 	switch n.Type {
-	case nodeTypes[APPROVER]:
+	case NodeTypes[APPROVER], NodeTypes[NOTIFIER]:
 		var aprover string
 		if n.Properties.ActionerRules[0].Type == actionRuleTypes[MANAGER] {
 			aprover = "主管"
@@ -137,6 +140,7 @@ func (n *Node) add2ExecutionList(list *list.List) {
 			NodeID:      n.NodeID,
 			Type:        n.Properties.ActionerRules[0].Type,
 			Aprover:     aprover,
+			AproverType: n.Type,
 			MemberCount: n.Properties.ActionerRules[0].MemberCount,
 			ActType:     n.Properties.ActionerRules[0].ActType,
 		})

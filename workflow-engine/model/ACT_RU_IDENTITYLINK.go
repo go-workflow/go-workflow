@@ -26,10 +26,12 @@ const (
 	PARTICIPANT
 	// MANAGER 上级领导
 	MANAGER
+	// NOTIFIER 抄送人
+	NOTIFIER
 )
 
 // IdentityTypes IdentityTypes
-var IdentityTypes = [...]string{CANDIDATE: "candidate", PARTICIPANT: "participant", MANAGER: "主管"}
+var IdentityTypes = [...]string{CANDIDATE: "candidate", PARTICIPANT: "participant", MANAGER: "主管", NOTIFIER: "notifier"}
 
 // SaveTx SaveTx
 func (i *Identitylink) SaveTx(tx *gorm.DB) error {
@@ -44,6 +46,22 @@ func (i *Identitylink) SaveTx(tx *gorm.DB) error {
 // 删除历史候选人
 func DelCandidateByProcInstID(procInstID int, tx *gorm.DB) error {
 	return tx.Where("proc_inst_id=? and type=?", procInstID, IdentityTypes[CANDIDATE]).Delete(&Identitylink{}).Error
+}
+
+// ExistsNotifierByProcInstIDAndGroup 抄送人是否已经存在
+func ExistsNotifierByProcInstIDAndGroup(procInstID int, group string) (bool, error) {
+	var count int
+	err := db.Model(&Identitylink{}).Where("identitylink.proc_inst_id=? and identitylink.group=? and identitylink.type=?", procInstID, group, IdentityTypes[NOTIFIER]).Count(&count).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return false, nil
+		}
+		return false, err
+	}
+	if count > 0 {
+		return true, nil
+	}
+	return false, nil
 }
 
 // IfParticipantByTaskID IfParticipantByTaskID

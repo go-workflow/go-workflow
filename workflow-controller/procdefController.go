@@ -31,7 +31,7 @@ func SaveProcdef(writer http.ResponseWriter, request *http.Request) {
 		util.ResponseErr(writer, "字段 company 不能为空")
 		return
 	}
-	if procdef.Resource == nil {
+	if procdef.Resource == nil || len(procdef.Resource.Name) == 0 {
 		util.ResponseErr(writer, "字段 resource 不能为空")
 		return
 	}

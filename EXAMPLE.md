@@ -43,6 +43,8 @@ docker run  -e DbType=mysql -e DbLogMode=false DbName=activiti -e DbHost=localho
 
   POST参数：{"taskID":2,"userID":"11029","procInstID":1,"company":"A公司"}
 
+   参数详解： taskID为当前任务id
+
 # 4.3 任务查询 
 
   通过POST访问 ：http://localhost:8080/workflow/process/findTask

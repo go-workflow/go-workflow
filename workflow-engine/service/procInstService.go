@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"sync"
 	"time"
 
@@ -99,35 +98,7 @@ func (p *ProcessReceiver) StartProcessInstanceByID(variable *map[string]string) 
 		ActType:       "or",
 		AgreeNum:      1,
 	}
-
-	// var taskErr, execErr error
-	// var wg sync.WaitGroup
-	// // numberOfRoutine := 2
-	// wg.Add(2)
-	// // 生成新任务
-	// go func() {
-	// 	// defer fmt.Println("生成新任务")
-	// 	_, taskErr = NewTaskTx(task, tx)
-	// 	defer wg.Done()
-	// }()
-	// go func() {
-	// 	// 生成执行流
-	// 	defer wg.Done()
-	// 	// defer fmt.Println("生成执行流")
-	// 	_, execErr = GenerateExec(exec, node, p.UserID, variable, tx)
-	// }()
-	// wg.Wait()
-	// // fmt.Println("生成任务和执行流结束")
-	// if taskErr != nil {
-	// 	tx.Rollback()
-	// 	return 0, err
-	// }
-	// if execErr != nil {
-	// 	tx.Rollback()
-	// 	return 0, err
-	// }
-	// -----------执行流--------------------
-	// times = time.Now()
+	// 生成执行流，一串运行节点
 	_, err = GenerateExec(exec, node, p.UserID, variable, tx) //事务
 	if err != nil {
 		tx.Rollback()
@@ -162,7 +133,7 @@ func (p *ProcessReceiver) StartProcessInstanceByID(variable *map[string]string) 
 		return 0, err
 	}
 	// fmt.Printf("流转到下一流程耗时：%v", time.Since(times))
-	fmt.Println("--------------提交事务----------")
+	// fmt.Println("--------------提交事务----------")
 	tx.Commit() //结束事务
 	return procInstID, err
 }
