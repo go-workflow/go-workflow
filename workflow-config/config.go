@@ -22,6 +22,9 @@ type Configuration struct {
 	DbPassword     string
 	DbMaxIdleConns string
 	DbMaxOpenConns string
+	RedisHost      string
+	RedisPort      string
+	RedisPassword  string
 }
 
 // Config 数据库配置
@@ -45,11 +48,6 @@ func LoadConfig() {
 	log.Printf("configuration:%s", string(config))
 }
 func (c *Configuration) setFromEnv() error {
-	// // 覆盖server配置
-	// c.setServerFromEnv()
-	// // 覆盖Db配置
-	// c.setDbFromEnv()'
-	// 获取对象Configuration的属性string流
 	fieldStream, err := util.GetFieldChannelFromStruct(&Configuration{})
 	if err != nil {
 		return err

@@ -10,5 +10,8 @@
   "DbUser": "root",
   "DbPassword": "123",
   "DbMaxIdleConns": "5",
-  "DbMaxOpenConns": "100"
+  "DbMaxOpenConns": "100",
+  "RedisHost": "localhost",
+  "RedisPort": "6379",
+  "RedisPassword": ""
 }
