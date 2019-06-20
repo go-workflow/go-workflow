@@ -55,6 +55,6 @@ docker run  -e DbType=mysql -e DbLogMode=false -e DbName=test -e DbHost=localhos
 
   通过POST访问 ：http://localhost:8080/workflow/process/findTask
   
-  POST参数：{"userID":"11025","groups":["人事"],"departments":["技术中心"],"company":"A公司"}
+  POST参数：{"userID":"11025","groups":["人事"],"departments":["技术中心"],"company":"A公司","procName": "请假"}
 
-  参数详解： groups 表示用户的所有角色，departments表示用户
+  参数详解： groups 表示用户的所有角色，departments表示用户， procName代理流程类型

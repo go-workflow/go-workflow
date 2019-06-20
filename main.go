@@ -23,6 +23,7 @@ func main() {
 	// -----------------------流程实例-----------------------
 	mux.HandleFunc("/workflow/process/start", controller.StartProcessInstance)
 	mux.HandleFunc("/workflow/process/findTask", controller.FindMyProcInstPageAsJSON)
+	mux.HandleFunc("/workflow/process/findTaskByToken", controller.FindMyProcInstByToken)
 	// mux.HandleFunc("/workflow/process/moveToHistory", controller.MoveFinishedProcInstToHistory)
 	// -----------------------任务--------------------------
 	mux.HandleFunc("/workflow/task/complete", controller.CompleteTask)

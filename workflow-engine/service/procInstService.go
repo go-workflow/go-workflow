@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"sync"
 	"time"
 
@@ -27,9 +28,10 @@ type ProcessPageReceiver struct {
 	// 我分管的部门
 	Departments []string `json:"departments"`
 	// 我所属于的用户组或者角色
-	Groups  []string `josn:"groups"`
-	UserID  string   `json:"userID"`
-	Company string   `json:"company"`
+	Groups   []string `josn:"groups"`
+	UserID   string   `json:"userID"`
+	Company  string   `json:"company"`
+	ProcName string   `json:"procName"`
 }
 
 var copyLock sync.Mutex
@@ -44,7 +46,7 @@ func GetDefaultProcessPageReceiver() *ProcessPageReceiver {
 func findAll(pr *ProcessPageReceiver) ([]*model.ProcInst, int, error) {
 	var page = util.Page{}
 	page.PageRequest(pr.PageIndex, pr.PageSize)
-	return model.FindProcInsts(pr.UserID, pr.Company, pr.Groups, pr.Departments, pr.PageIndex, pr.PageSize)
+	return model.FindProcInsts(pr.UserID, pr.ProcName, pr.Company, pr.Groups, pr.Departments, pr.PageIndex, pr.PageSize)
 }
 
 // FindAllPageAsJSON FindAllPageAsJSON
@@ -54,6 +56,29 @@ func FindAllPageAsJSON(pr *ProcessPageReceiver) (string, error) {
 		return "", err
 	}
 	return util.ToPageJSON(datas, count, pr.PageIndex, pr.PageSize)
+}
+
+// FindMyProcInstByToken FindMyProcInstByToken
+// 根据token获取流程信息
+func FindMyProcInstByToken(token string, receiver *ProcessPageReceiver) (string, error) {
+	// 根据 token 获取用户信息
+	userinfo, err := GetUserinfoFromRedis(token)
+	if err != nil {
+		return "", err
+	}
+	if len(userinfo.Company) == 0 {
+		return "", errors.New("公司 company 不能为空")
+	}
+	if len(userinfo.Username) == 0 {
+		return "", errors.New("用户 username 不能为空")
+	}
+	receiver.Company = userinfo.Company
+	receiver.Departments = userinfo.Departments
+	receiver.Groups = userinfo.Roles
+	receiver.UserID = userinfo.Username
+	// str, _ = util.ToJSONStr(receiver)
+	// fmt.Printf("receiver:%s\n", str)
+	return FindAllPageAsJSON(receiver)
 }
 
 // StartProcessInstanceByID 启动流程

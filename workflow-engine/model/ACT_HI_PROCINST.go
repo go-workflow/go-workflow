@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"sync"
 
 	"github.com/jinzhu/gorm"
@@ -32,10 +33,10 @@ type ProcInst struct {
 }
 
 // GroupsNotNull 候选组
-func GroupsNotNull(groups []string, company string) func(db *gorm.DB) *gorm.DB {
+func GroupsNotNull(groups []string, sql string) func(db *gorm.DB) *gorm.DB {
 	if len(groups) > 0 {
 		return func(db *gorm.DB) *gorm.DB {
-			return db.Or("is_finished=0 and candidate in (?) and company=?", groups, company)
+			return db.Or("candidate in (?) and "+sql, groups)
 		}
 	}
 	return func(db *gorm.DB) *gorm.DB {
@@ -44,10 +45,10 @@ func GroupsNotNull(groups []string, company string) func(db *gorm.DB) *gorm.DB {
 }
 
 // DepartmentsNotNull 分管部门
-func DepartmentsNotNull(departments []string, company string) func(db *gorm.DB) *gorm.DB {
+func DepartmentsNotNull(departments []string, sql string) func(db *gorm.DB) *gorm.DB {
 	if len(departments) > 0 {
 		return func(db *gorm.DB) *gorm.DB {
-			return db.Or("is_finished=0 and department in (?) and candidate=? and company=?", departments, IdentityTypes[MANAGER], company)
+			return db.Or("department in (?) and candidate=? and "+sql, departments, IdentityTypes[MANAGER])
 		}
 	}
 	return func(db *gorm.DB) *gorm.DB {
@@ -57,34 +58,34 @@ func DepartmentsNotNull(departments []string, company string) func(db *gorm.DB) 
 
 // FindProcInsts FindProcInsts
 // 分页查询
-func FindProcInsts(userID, company string, groups, departments []string, pageIndex, pageSize int) ([]*ProcInst, int, error) {
+func FindProcInsts(userID, procName, company string, groups, departments []string, pageIndex, pageSize int) ([]*ProcInst, int, error) {
 
 	var datas []*ProcInst
 	var count int
-	//----普通写法--------
-	// err := db.Scopes(GroupsNotNull(groups), DepartmentsNotNull(departments)).Or("is_finished=0 and candidate=?", userID).Offset((pageIndex - 1) * pageSize).Limit(pageSize).Find(&datas).Error
-	// if err != nil {
-	// 	if err == gorm.ErrRecordNotFound {
-	// 		return nil, 0, nil
-	// 	}
-	// 	return nil, 0, err
-	// }
-	// err = db.Scopes(GroupsNotNull(groups), DepartmentsNotNull(departments)).Model(&ProcInst{}).Or("is_finished=0 and candidate=?", userID).Count(&count).Error
-	// if err != nil {
-	// 	return nil, 0, err
-	// }
-	// return datas, count, nil
-	//--------使用chanel写法
+	var sql = " company='" + company + "' and is_finished=0 "
+	if len(procName) > 0 {
+		sql += "and proc_def_name='" + procName + "'"
+	}
+	fmt.Println(sql)
 	selectDatas := func(in chan<- error, wg *sync.WaitGroup) {
 		go func() {
-			err := db.Scopes(GroupsNotNull(groups, company), DepartmentsNotNull(departments, company)).Or("is_finished=0 and candidate=? and company=?", userID, company).Offset((pageIndex - 1) * pageSize).Limit(pageSize).Find(&datas).Error
+			// err := db.Scopes(GroupsNotNull(groups, company), DepartmentsNotNull(departments, company)).
+			// 	Or("is_finished=0 and candidate=? and company=?", userID, company).
+			// 	Offset((pageIndex - 1) * pageSize).Limit(pageSize).
+			// 	Order("start_time desc").
+			// 	Find(&datas).Error
+			err := db.Scopes(GroupsNotNull(groups, sql), DepartmentsNotNull(departments, sql)).
+				Or("candidate=? and "+sql, userID).
+				Offset((pageIndex - 1) * pageSize).Limit(pageSize).
+				Order("start_time desc").
+				Find(&datas).Error
 			in <- err
 			wg.Done()
 		}()
 	}
 	selectCount := func(in chan<- error, wg *sync.WaitGroup) {
 		go func() {
-			err := db.Scopes(GroupsNotNull(groups, company), DepartmentsNotNull(departments, company)).Model(&ProcInst{}).Or("is_finished=0 and candidate=? and company=?", userID, company).Count(&count).Error
+			err := db.Scopes(GroupsNotNull(groups, sql), DepartmentsNotNull(departments, sql)).Model(&ProcInst{}).Or("candidate=? and "+sql, userID).Count(&count).Error
 			in <- err
 			wg.Done()
 		}()
