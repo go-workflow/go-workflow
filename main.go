@@ -27,7 +27,11 @@ func main() {
 	// mux.HandleFunc("/workflow/process/moveToHistory", controller.MoveFinishedProcInstToHistory)
 	// -----------------------任务--------------------------
 	mux.HandleFunc("/workflow/task/complete", controller.CompleteTask)
+	mux.HandleFunc("/workflow/task/completeByToken", controller.CompleteTaskByToken)
 	mux.HandleFunc("/workflow/task/withdraw", controller.WithDrawTask)
+	mux.HandleFunc("/workflow/task/withdrawByToken", controller.WithDrawTaskByToken)
+	// ----------------------- 关系表 -------------------------
+	mux.HandleFunc("/workflow/identitylink/findParticipant", controller.FindParticipantByProcInstID)
 	// 配置
 	var config = *config.Config
 	// 启动数据库连接

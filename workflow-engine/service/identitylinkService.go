@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/go-workflow/go-workflow/workflow-engine/model"
 	"github.com/jinzhu/gorm"
+	"github.com/mumushuiding/util"
 )
 
 // SaveIdentitylinkTx SaveIdentitylinkTx
@@ -93,7 +94,7 @@ func AddCandidateUserTx(userID, company string, step, taskID, procInstID int, tx
 
 //AddParticipantTx AddParticipantTx
 // 添加任务参与人
-func AddParticipantTx(userID, company string, taskID, procInstID, step int, tx *gorm.DB) error {
+func AddParticipantTx(userID, company, comment string, taskID, procInstID, step int, tx *gorm.DB) error {
 	i := &model.Identitylink{
 		Type:       model.IdentityTypes[model.PARTICIPANT],
 		UserID:     userID,
@@ -101,6 +102,7 @@ func AddParticipantTx(userID, company string, taskID, procInstID, step int, tx *
 		Step:       step,
 		Company:    company,
 		TaskID:     taskID,
+		Comment:    comment,
 	}
 	return SaveIdentitylinkTx(i, tx)
 }
@@ -120,4 +122,17 @@ func DelCandidateByProcInstID(procInstID int, tx *gorm.DB) error {
 // ExistsNotifierByProcInstIDAndGroup 抄送人是否已经存在
 func ExistsNotifierByProcInstIDAndGroup(procInstID int, group string) (bool, error) {
 	return model.ExistsNotifierByProcInstIDAndGroup(procInstID, group)
+}
+
+// FindParticipantByProcInstID 查询参与审批的人
+func FindParticipantByProcInstID(procInstID int) (string, error) {
+	datas, err := model.FindParticipantByProcInstID(procInstID)
+	if err != nil {
+		return "", err
+	}
+	str, err := util.ToJSONStr(datas)
+	if err != nil {
+		return "", err
+	}
+	return str, nil
 }

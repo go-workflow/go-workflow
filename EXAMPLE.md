@@ -40,7 +40,7 @@ docker run  -e DbType=mysql -e DbLogMode=false -e DbName=test -e DbHost=localhos
 # 4.1 审批
   通过POST访问：http://localhost:8080/workflow/task/complete
 
-  POST参数：{"taskID":2,"pass":"true","userID":"11029","company":"A公司"}
+  POST参数：{"taskID":2,"pass":"true","userID":"11029","company":"A公司","comment": "评论备注"}
 
   参数详解： 2代表当前任务id，true表示通过，false表示驳回
 # 4.2 撤回
@@ -57,4 +57,4 @@ docker run  -e DbType=mysql -e DbLogMode=false -e DbName=test -e DbHost=localhos
   
   POST参数：{"userID":"11025","groups":["人事"],"departments":["技术中心"],"company":"A公司","procName": "请假"}
 
-  参数详解： groups 表示用户的所有角色，departments表示用户， procName代理流程类型
+  参数详解： groups 表示用户的所有角色，departments表示用户， procName：流程类型

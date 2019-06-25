@@ -7,13 +7,14 @@ import (
 // Identitylink 用户组同任务的关系
 type Identitylink struct {
 	Model
-	Group      string `json:"group"`
-	Type       string `json:"type"`
-	UserID     string `json:"userid"`
-	TaskID     int    `json:"taskID"`
+	Group      string `json:"group,omitempty"`
+	Type       string `json:"type,omitempty"`
+	UserID     string `json:"userid,omitempty"`
+	TaskID     int    `json:"taskID,omitempty"`
 	Step       int    `json:"step"`
-	ProcInstID int    `json:"procInstID"`
-	Company    string `json:"company"`
+	ProcInstID int    `json:"procInstID,omitempty"`
+	Company    string `json:"company,omitempty"`
+	Comment    string `json:"comment,omitempty"`
 }
 
 // IdentityType 类型
@@ -79,4 +80,11 @@ func IfParticipantByTaskID(userID, company string, taskID int) (bool, error) {
 		return true, nil
 	}
 	return false, nil
+}
+
+// FindParticipantByProcInstID 查询参与审批的人
+func FindParticipantByProcInstID(procInstID int) ([]*Identitylink, error) {
+	var datas []*Identitylink
+	err := db.Select("id,user_id,step,comment").Where("proc_inst_id=? and type=?", procInstID, IdentityTypes[PARTICIPANT]).Order("id asc").Find(&datas).Error
+	return datas, err
 }

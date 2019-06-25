@@ -69,11 +69,6 @@ func FindProcInsts(userID, procName, company string, groups, departments []strin
 	fmt.Println(sql)
 	selectDatas := func(in chan<- error, wg *sync.WaitGroup) {
 		go func() {
-			// err := db.Scopes(GroupsNotNull(groups, company), DepartmentsNotNull(departments, company)).
-			// 	Or("is_finished=0 and candidate=? and company=?", userID, company).
-			// 	Offset((pageIndex - 1) * pageSize).Limit(pageSize).
-			// 	Order("start_time desc").
-			// 	Find(&datas).Error
 			err := db.Scopes(GroupsNotNull(groups, sql), DepartmentsNotNull(departments, sql)).
 				Or("candidate=? and "+sql, userID).
 				Offset((pageIndex - 1) * pageSize).Limit(pageSize).

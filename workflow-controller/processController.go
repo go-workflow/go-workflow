@@ -99,7 +99,7 @@ func FindMyProcInstByToken(writer http.ResponseWriter, request *http.Request) {
 	}
 	// fmt.Printf("token:%s\n", token)
 	if request.Method != "POST" {
-		util.ResponseErr(writer, "只支持Post方法！！Only suppoert Post ")
+		util.ResponseErr(writer, "只支持Post方法！！")
 		return
 	}
 	var receiver = service.GetDefaultProcessPageReceiver()
@@ -113,7 +113,7 @@ func FindMyProcInstByToken(writer http.ResponseWriter, request *http.Request) {
 		util.ResponseErr(writer, err)
 		return
 	}
-	util.Response(writer, result, true)
+	fmt.Fprintf(writer, result)
 }
 
 // MoveFinishedProcInstToHistory MoveFinishedProcInstToHistory
