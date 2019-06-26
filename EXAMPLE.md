@@ -58,3 +58,9 @@ docker run  -e DbType=mysql -e DbLogMode=false -e DbName=test -e DbHost=localhos
   POST参数：{"userID":"11025","groups":["人事"],"departments":["技术中心"],"company":"A公司","procName": "请假"}
 
   参数详解： groups 表示用户的所有角色，departments表示用户， procName：流程类型
+# 4.4 查询流程审批人与评论
+  
+  通过GET访问 ：http://localhost:8080/workflow/identitylink/findParticipant?procInstID=12562
+
+  参数详解： procInstID 为流程实例id
+
