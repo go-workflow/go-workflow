@@ -373,7 +373,7 @@ func MoveToNextStage(nodeInfos []*flow.NodeInfo, userID, company string, current
 		procInst.TaskID = taksID
 		procInst.EndTime = currentTime
 		procInst.IsFinished = true
-		procInst.Candidate = ""
+		procInst.Candidate = "审批结束"
 		err = UpdateProcInst(procInst, tx)
 		if err != nil {
 			return err

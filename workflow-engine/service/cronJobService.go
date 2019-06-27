@@ -11,9 +11,9 @@ import (
 func CronJobs() {
 	go func() {
 		c := cron.New()
-		// 每天0点执行
-		spec := "0 0 0 * * ?"
-		//每天0点时将已经结束的流程数据迁移至历史数据表
+		// 每隔 20 秒执行
+		spec := "*/20 * * * * ?"
+		//每隔20秒将已经结束的流程数据迁移至历史数据表
 		c.AddFunc(spec, func() {
 			MoveFinishedProcInstToHistory()
 		})

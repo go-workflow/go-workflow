@@ -16,6 +16,9 @@ docker run  -e DbType=mysql -e DbLogMode=false -e DbName=test -e DbHost=localhos
 请查阅根目录的 k8s.yaml 文件 ， 配置使用了Istio, 未使用Istio的请稍作修改
 
 # 2.流程存储
+
+  （注意：整个流程框架，所有关于 userID的值最好是用户名，用户名不可重复）
+
 # 2.1 存储流程定义。
   通过 Post 访问： http://localhost:8080/workflow/procdef/save
 
@@ -43,6 +46,8 @@ docker run  -e DbType=mysql -e DbLogMode=false -e DbName=test -e DbHost=localhos
   POST参数：{"taskID":2,"pass":"true","userID":"11029","company":"A公司","comment": "评论备注"}
 
   参数详解： 2代表当前任务id，true表示通过，false表示驳回
+
+  （注意：整个流程框架，所有关于 userID的值最好是用户名，用户名不可重复）
 # 4.2 撤回
 
   通过POST访问：http://localhost:8080/workflow/task/withdraw
@@ -55,12 +60,25 @@ docker run  -e DbType=mysql -e DbLogMode=false -e DbName=test -e DbHost=localhos
 
   通过POST访问 ：http://localhost:8080/workflow/process/findTask
   
-  POST参数：{"userID":"11025","groups":["人事"],"departments":["技术中心"],"company":"A公司","procName": "请假"}
+  POST参数：{"userID":"11025","groups":["人事"],"departments":["技术中心"],"company":"A公司","procName": "请假","pageIndex":1,"pageSize":10}
 
-  参数详解： groups 表示用户的所有角色，departments表示用户， procName：流程类型
+  参数详解： groups 表示用户的所有角色，departments表示用户负责的部门， procName：流程类型,pageIndex表示当前页可不填（默认1)，pageSize表示每页显示条数可不填（默认10）
+
+
+  （注意：整个流程框架，所有关于 userID的值最好是用户名，用户名不可重复）
+
 # 4.4 查询流程审批人与评论
   
   通过GET访问 ：http://localhost:8080/workflow/identitylink/findParticipant?procInstID=12562
 
   参数详解： procInstID 为流程实例id
+
+# 4.5 查询历史流程
+
+  通过POST访问： http://localhost:8080/workflow/procHistory/findTask
+
+  POST参数：{"userID":"admin","company":"A公司","pageIndex":1,"pageSize":2}
+
+  （注意：整个流程框架，所有关于 userID 的值最好是用户名，用户名不可重复）
+
 

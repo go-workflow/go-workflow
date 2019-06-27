@@ -1,7 +1,6 @@
 package model
 
 import (
-	"fmt"
 	"sync"
 
 	"github.com/jinzhu/gorm"
@@ -59,14 +58,13 @@ func DepartmentsNotNull(departments []string, sql string) func(db *gorm.DB) *gor
 // FindProcInsts FindProcInsts
 // 分页查询
 func FindProcInsts(userID, procName, company string, groups, departments []string, pageIndex, pageSize int) ([]*ProcInst, int, error) {
-
 	var datas []*ProcInst
 	var count int
 	var sql = " company='" + company + "' and is_finished=0 "
 	if len(procName) > 0 {
 		sql += "and proc_def_name='" + procName + "'"
 	}
-	fmt.Println(sql)
+	// fmt.Println(sql)
 	selectDatas := func(in chan<- error, wg *sync.WaitGroup) {
 		go func() {
 			err := db.Scopes(GroupsNotNull(groups, sql), DepartmentsNotNull(departments, sql)).

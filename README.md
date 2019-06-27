@@ -112,7 +112,7 @@
     转到下一步，如果有一个人驳回那么就跳转到上一步
 
 # 1.6 历史数据表
-  历史数据表包括 execution_history，identitylink_history，proc_inst_history，task_history这些表字段同正常的表相同，每天0点时，已经结束的流程数据会自动迁移过来
+  历史数据表包括 execution_history，identitylink_history，proc_inst_history，task_history这些表字段同正常的表相同，每隔20秒，将已经结束的流程数据会自动迁移过来
 ## 2 流程的存储
 # 2.1 添加流程资源
   启动 go-workflow 微服务后，可以在浏览器中输入：http://localhost:8080/workflow/procdef/save 进行存储

@@ -32,6 +32,10 @@ func main() {
 	mux.HandleFunc("/workflow/task/withdrawByToken", controller.WithDrawTaskByToken)
 	// ----------------------- 关系表 -------------------------
 	mux.HandleFunc("/workflow/identitylink/findParticipant", controller.FindParticipantByProcInstID)
+
+	// ******************************** 历史纪录 ***********************************
+	// -------------------------- 流程实例 -------------------------------
+	mux.HandleFunc("/workflow/procHistory/findTask", controller.FindProcHistory)
 	// 配置
 	var config = *config.Config
 	// 启动数据库连接
