@@ -83,4 +83,19 @@ docker run  -e DbType=mysql -e DbLogMode=false -e DbName=test -e DbHost=localhos
 
   （注意：整个流程框架，所有关于 userID 的值最好是用户名，用户名不可重复）
 
+# 5.2 查询我发起的流程
+
+-----------查询已经结束的流程--------
+
+  通过POST访问： http://localhost:8080/workflow/procHistory/startByMyself
+
+  POST参数： {"userID":"admin","company":"A公司","pageIndex":1,"pageSize":2}
+
+-----------查询正在审批的流程--------
+
+  通过POST访问： http://localhost:8080/workflow/process/startByMyself
+
+  POST参数： {"userID":"admin","company":"A公司","pageIndex":1,"pageSize":2}
+
+
 

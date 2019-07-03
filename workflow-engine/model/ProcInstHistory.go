@@ -11,6 +11,49 @@ type ProcInstHistory struct {
 	ProcInst
 }
 
+// StartHistoryByMyself 查询我发起的流程
+func StartHistoryByMyself(userID, company string, pageIndex, pageSize int) ([]*ProcInstHistory, int, error) {
+	maps := map[string]interface{}{
+		"start_user_id": userID,
+		"company":       company,
+	}
+	return findProcInstsHistory(maps, pageIndex, pageSize)
+}
+func findProcInstsHistory(maps map[string]interface{}, pageIndex, pageSize int) ([]*ProcInstHistory, int, error) {
+	var datas []*ProcInstHistory
+	var count int
+	selectDatas := func(in chan<- error, wg *sync.WaitGroup) {
+		go func() {
+			err := db.Where(&datas).Offset((pageIndex - 1) * pageSize).Limit(pageSize).Order("start_time desc").Find(&datas).Error
+			in <- err
+			wg.Done()
+		}()
+	}
+	selectCount := func(in chan<- error, wg *sync.WaitGroup) {
+		err := db.Model(&ProcInstHistory{}).Where(maps).Count(&count).Error
+		in <- err
+		wg.Done()
+	}
+	var err1 error
+	var wg sync.WaitGroup
+	numberOfRoutine := 2
+	wg.Add(numberOfRoutine)
+	errStream := make(chan error, numberOfRoutine)
+	// defer fmt.Println("close channel")
+	selectDatas(errStream, &wg)
+	selectCount(errStream, &wg)
+	wg.Wait()
+	defer close(errStream) // 关闭通道
+	for i := 0; i < numberOfRoutine; i++ {
+		// log.Printf("send: %v", <-errStream)
+		if err := <-errStream; err != nil {
+			err1 = err
+		}
+	}
+	// fmt.Println("结束")
+	return datas, count, err1
+}
+
 // FindProcHistory 查询历史纪录
 func FindProcHistory(userID, company string, pageIndex, pageSize int) ([]*ProcInstHistory, int, error) {
 	var datas []*ProcInstHistory

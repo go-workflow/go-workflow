@@ -190,6 +190,17 @@ func SetProcInstFinish(procInstID int, endTime string, tx *gorm.DB) error {
 	return p.UpdateTx(tx)
 }
 
+// StartByMyself 我发起的流程
+func StartByMyself(receiver *ProcessPageReceiver) (string, error) {
+	var page = util.Page{}
+	page.PageRequest(receiver.PageIndex, receiver.PageSize)
+	datas, count, err := model.StartByMyself(receiver.UserID, receiver.Company, receiver.PageIndex, receiver.PageSize)
+	if err != nil {
+		return "", err
+	}
+	return util.ToPageJSON(datas, count, receiver.PageIndex, receiver.PageSize)
+}
+
 // UpdateProcInst UpdateProcInst
 // 更新流程实例
 func UpdateProcInst(procInst *model.ProcInst, tx *gorm.DB) error {
