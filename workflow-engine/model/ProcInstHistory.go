@@ -24,7 +24,7 @@ func findProcInstsHistory(maps map[string]interface{}, pageIndex, pageSize int) 
 	var count int
 	selectDatas := func(in chan<- error, wg *sync.WaitGroup) {
 		go func() {
-			err := db.Where(&datas).Offset((pageIndex - 1) * pageSize).Limit(pageSize).Order("start_time desc").Find(&datas).Error
+			err := db.Where(maps).Offset((pageIndex - 1) * pageSize).Limit(pageSize).Order("start_time desc").Find(&datas).Error
 			in <- err
 			wg.Done()
 		}()
