@@ -36,6 +36,7 @@ func main() {
 	// ******************************** 历史纪录 ***********************************
 	// -------------------------- 流程实例 -------------------------------
 	mux.HandleFunc("/workflow/procHistory/findTask", controller.FindProcHistory)
+	mux.HandleFunc("/workflow/procHistory/findTaskByToken", controller.FindProcHistoryByToken)
 	// 配置
 	var config = *config.Config
 	// 启动数据库连接

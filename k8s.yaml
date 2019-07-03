@@ -49,7 +49,8 @@ spec:
           - name: DbUser
             value: root
           - name: DbPassword
-            value: "123"
+            value: "123
+            "
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway

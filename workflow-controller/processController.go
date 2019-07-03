@@ -88,6 +88,10 @@ func FindMyProcInstPageAsJSON(writer http.ResponseWriter, request *http.Request)
 // FindMyProcInstByToken FindMyProcInstByToken
 // 查询待办的流程
 func FindMyProcInstByToken(writer http.ResponseWriter, request *http.Request) {
+	if request.Method != "POST" {
+		util.ResponseErr(writer, "只支持Post方法！！")
+		return
+	}
 	token := request.Header.Get("Authorization")
 	if len(token) == 0 {
 		request.ParseForm()
@@ -98,10 +102,6 @@ func FindMyProcInstByToken(writer http.ResponseWriter, request *http.Request) {
 		token = request.Form["token"][0]
 	}
 	// fmt.Printf("token:%s\n", token)
-	if request.Method != "POST" {
-		util.ResponseErr(writer, "只支持Post方法！！")
-		return
-	}
 	var receiver = service.GetDefaultProcessPageReceiver()
 	err := util.Body2Struct(request, &receiver)
 	if err != nil {

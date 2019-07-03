@@ -6,7 +6,7 @@ docker run  -e DbType=mysql -e DbLogMode=false -e DbName=test -e DbHost=localhos
 
 # 1.3 通过 go get 获取
 
- 1.go get github.com/mumushuiding/go-workflow/releases
+ 1.go get https://github.com/go-workflow/go-workflow
  2.进入根目录，打开config.json文件,修改数据库连接配置
  3. $ go build
  4. $ go-workflow.exe
@@ -73,7 +73,9 @@ docker run  -e DbType=mysql -e DbLogMode=false -e DbName=test -e DbHost=localhos
 
   参数详解： procInstID 为流程实例id
 
-# 4.5 查询历史流程
+# 5 查询历史流程
+
+# 5.1 查询我审批的流程
 
   通过POST访问： http://localhost:8080/workflow/procHistory/findTask
 
