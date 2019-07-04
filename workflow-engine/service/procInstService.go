@@ -201,6 +201,17 @@ func StartByMyself(receiver *ProcessPageReceiver) (string, error) {
 	return util.ToPageJSON(datas, count, receiver.PageIndex, receiver.PageSize)
 }
 
+// FindProcNotify 查询抄送我的
+func FindProcNotify(receiver *ProcessPageReceiver) (string, error) {
+	var page = util.Page{}
+	page.PageRequest(receiver.PageIndex, receiver.PageSize)
+	datas, count, err := model.FindProcNotify(receiver.UserID, receiver.Company, receiver.Groups, receiver.PageIndex, receiver.PageSize)
+	if err != nil {
+		return "", err
+	}
+	return util.ToPageJSON(datas, count, receiver.PageIndex, receiver.PageSize)
+}
+
 // UpdateProcInst UpdateProcInst
 // 更新流程实例
 func UpdateProcInst(procInst *model.ProcInst, tx *gorm.DB) error {

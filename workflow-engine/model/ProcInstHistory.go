@@ -1,6 +1,7 @@
 package model
 
 import (
+	"strings"
 	"sync"
 
 	"github.com/jinzhu/gorm"
@@ -107,4 +108,29 @@ func DelProcInstHistoryByID(id int) error {
 // SaveProcInstHistoryTx SaveProcInstHistoryTx
 func SaveProcInstHistoryTx(p *ProcInst, tx *gorm.DB) error {
 	return tx.Table("proc_inst_history").Create(p).Error
+}
+
+// FindProcHistoryNotify 查询抄送我的历史纪录
+func FindProcHistoryNotify(userID, company string, groups []string, pageIndex, pageSize int) ([]*ProcInstHistory, int, error) {
+	var datas []*ProcInstHistory
+	var count int
+	var sql string
+	if len(groups) != 0 {
+		var s []string
+		for _, val := range groups {
+			s = append(s, "\""+val+"\"")
+		}
+		sql = "select proc_inst_id from identitylink_history i where i.type='notifier' and i.company='" + company + "' and (i.user_id='" + userID + "' or i.group in (" + strings.Join(s, ",") + "))"
+	} else {
+		sql = "select proc_inst_id from identitylink_history i where i.type='notifier' and i.company='" + company + "' and i.user_id='" + userID + "'"
+	}
+	err := db.Where("id in (" + sql + ")").Offset((pageIndex - 1) * pageSize).Limit(pageSize).Order("start_time desc").Find(&datas).Error
+	if err != nil {
+		return datas, count, err
+	}
+	err = db.Model(&ProcInstHistory{}).Where("id in (" + sql + ")").Count(&count).Error
+	if err != nil {
+		return nil, count, err
+	}
+	return datas, count, err
 }

@@ -1,6 +1,7 @@
 package model
 
 import (
+	"strings"
 	"sync"
 
 	"github.com/jinzhu/gorm"
@@ -62,6 +63,31 @@ func StartByMyself(userID, company string, pageIndex, pageSize int) ([]*ProcInst
 		"company":       company,
 	}
 	return findProcInsts(maps, pageIndex, pageSize)
+}
+
+// FindProcNotify 查询抄送我的流程
+func FindProcNotify(userID, company string, groups []string, pageIndex, pageSize int) ([]*ProcInst, int, error) {
+	var datas []*ProcInst
+	var count int
+	var sql string
+	if len(groups) != 0 {
+		var s []string
+		for _, val := range groups {
+			s = append(s, "\""+val+"\"")
+		}
+		sql = "select proc_inst_id from identitylink i where i.type='notifier' and i.company='" + company + "' and (i.user_id='" + userID + "' or i.group in (" + strings.Join(s, ",") + "))"
+	} else {
+		sql = "select proc_inst_id from identitylink i where i.type='notifier' and i.company='" + company + "' and i.user_id='" + userID + "'"
+	}
+	err := db.Where("id in (" + sql + ")").Offset((pageIndex - 1) * pageSize).Limit(pageSize).Order("start_time desc").Find(&datas).Error
+	if err != nil {
+		return datas, count, err
+	}
+	err = db.Model(&ProcInst{}).Where("id in (" + sql + ")").Count(&count).Error
+	if err != nil {
+		return nil, count, err
+	}
+	return datas, count, err
 }
 func findProcInsts(maps map[string]interface{}, pageIndex, pageSize int) ([]*ProcInst, int, error) {
 	var datas []*ProcInst

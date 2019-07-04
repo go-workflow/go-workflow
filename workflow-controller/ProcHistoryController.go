@@ -98,3 +98,28 @@ func StartHistoryByMyself(writer http.ResponseWriter, request *http.Request) {
 	}
 	fmt.Fprintf(writer, result)
 }
+func FindProcHistoryNotify(writer http.ResponseWriter, request *http.Request) {
+	if request.Method != "POST" {
+		util.ResponseErr(writer, "只支持POST方法")
+	}
+	var receiver = service.GetDefaultProcessPageReceiver()
+	err := util.Body2Struct(request, &receiver)
+	if err != nil {
+		util.ResponseErr(writer, err)
+		return
+	}
+	if len(receiver.UserID) == 0 {
+		util.Response(writer, "用户userID不能为空", false)
+		return
+	}
+	if len(receiver.Company) == 0 {
+		util.Response(writer, "字段 company 不能为空", false)
+		return
+	}
+	result, err := service.FindProcHistoryNotify(receiver)
+	if err != nil {
+		util.ResponseErr(writer, err)
+		return
+	}
+	fmt.Fprintf(writer, result)
+}

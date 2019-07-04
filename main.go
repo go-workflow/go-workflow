@@ -24,7 +24,8 @@ func main() {
 	mux.HandleFunc("/workflow/process/start", controller.StartProcessInstance)        // 启动流程
 	mux.HandleFunc("/workflow/process/findTask", controller.FindMyProcInstPageAsJSON) // 查询需要我审批的流程
 	mux.HandleFunc("/workflow/process/findTaskByToken", controller.FindMyProcInstByToken)
-	mux.HandleFunc("/workflow/process/startByMyself", controller.StartByMyself) // 查询我启动的流程
+	mux.HandleFunc("/workflow/process/startByMyself", controller.StartByMyself)   // 查询我启动的流程
+	mux.HandleFunc("/workflow/process/FindProcNotify", controller.FindProcNotify) // 查询抄送我的流程
 	// mux.HandleFunc("/workflow/process/moveToHistory", controller.MoveFinishedProcInstToHistory)
 	// -----------------------任务--------------------------
 	mux.HandleFunc("/workflow/task/complete", controller.CompleteTask)
@@ -38,7 +39,8 @@ func main() {
 	// -------------------------- 流程实例 -------------------------------
 	mux.HandleFunc("/workflow/procHistory/findTask", controller.FindProcHistory)
 	mux.HandleFunc("/workflow/procHistory/findTaskByToken", controller.FindProcHistoryByToken)
-	mux.HandleFunc("/workflow/procHistory/startByMyself", controller.StartHistoryByMyself) // 查询我启动的流程
+	mux.HandleFunc("/workflow/procHistory/startByMyself", controller.StartHistoryByMyself)   // 查询我启动的流程
+	mux.HandleFunc("/workflow/procHistory/FindProcNotify", controller.FindProcHistoryNotify) // 查询抄送我的流程
 	// ----------------------- 关系表 -------------------------
 	mux.HandleFunc("/workflow/identitylinkHistory/findParticipant", controller.FindParticipantHistoryByProcInstID)
 	// 配置

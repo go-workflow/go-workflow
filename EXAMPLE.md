@@ -97,5 +97,18 @@ docker run  -e DbType=mysql -e DbLogMode=false -e DbName=test -e DbHost=localhos
 
   POST参数： {"userID":"admin","company":"A公司","pageIndex":1,"pageSize":2}
 
+# 5.3 查询抄送我的流程
+
+------------------ 审批中 ------------------------
+
+  通过POST访问： http://localhost:8080/workflow/process/FindProcNotify
+
+  POST参数：{"userID":"admin","company":"A公司","groups":["人事","产品经理"]}
+
+-----------------  已结束-------------------------
+
+  通过POST访问：http://localhost:8080/workflow/procHistory/FindProcNotify
+
+  POST参数：{"userID":"admin","company":"A公司","groups":["人事","产品经理"]}
 
 

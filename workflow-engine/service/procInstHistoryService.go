@@ -42,10 +42,23 @@ func findAllProcHistory(receiver *ProcessPageReceiver) ([]*model.ProcInstHistory
 func DelProcInstHistoryByID(id int) error {
 	return model.DelProcInstHistoryByID(id)
 }
+
+// StartHistoryByMyself 查询我发起的流程
 func StartHistoryByMyself(receiver *ProcessPageReceiver) (string, error) {
 	var page = util.Page{}
 	page.PageRequest(receiver.PageIndex, receiver.PageSize)
 	datas, count, err := model.StartHistoryByMyself(receiver.UserID, receiver.Company, receiver.PageIndex, receiver.PageSize)
+	if err != nil {
+		return "", err
+	}
+	return util.ToPageJSON(datas, count, receiver.PageIndex, receiver.PageSize)
+}
+
+// FindProcHistoryNotify 查询抄送我的流程
+func FindProcHistoryNotify(receiver *ProcessPageReceiver) (string, error) {
+	var page = util.Page{}
+	page.PageRequest(receiver.PageIndex, receiver.PageSize)
+	datas, count, err := model.FindProcHistoryNotify(receiver.UserID, receiver.Company, receiver.Groups, receiver.PageIndex, receiver.PageSize)
 	if err != nil {
 		return "", err
 	}
