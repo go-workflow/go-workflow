@@ -49,8 +49,15 @@ spec:
           - name: DbUser
             value: root
           - name: DbPassword
-            value: "123
-            "
+            value: "123"
+          - name: RedisCluster # 是否是redis集群 
+            value: "true"
+          - name: RedisHost
+            value: redis-service   # redis 集群ip
+          - name: RedisPort
+            value: "6379"
+          - name: RedisPassword
+            value: ""
 ---
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway

@@ -8,14 +8,25 @@ import (
 )
 
 // RedisClient redis客户端
-var RedisClient *redis.Client
+var RedisClient *redis.ClusterClient
 
 // SetRedis 设置redis
 func SetRedis() {
 	var err error
 	fmt.Println("-------启动redis--------")
-	RedisClient = redis.NewClient(&redis.Options{
-		Addr:     conf.RedisHost + ":" + conf.RedisPort,
+	// if conf.RedisCluster == "true" {
+	// 	RedisClient = redis.NewClusterClient(&redis.ClusterOptions{
+	// 		Addrs:    []string{conf.RedisHost + ":" + conf.RedisPort},
+	// 		Password: conf.RedisPassword,
+	// 	})
+	// }else {
+	// 	RedisClient = redis.NewClient(&redis.Options{
+	// 		Addr:     conf.RedisHost + ":" + conf.RedisPort,
+	// 		Password: conf.RedisPassword,
+	// 	})
+	// }
+	RedisClient = redis.NewClusterClient(&redis.ClusterOptions{
+		Addrs:    []string{conf.RedisHost + ":" + conf.RedisPort},
 		Password: conf.RedisPassword,
 	})
 	pong, err := RedisClient.Ping().Result()

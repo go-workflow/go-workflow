@@ -22,6 +22,7 @@ type Configuration struct {
 	DbPassword     string
 	DbMaxIdleConns string
 	DbMaxOpenConns string
+	RedisCluster   string
 	RedisHost      string
 	RedisPort      string
 	RedisPassword  string
