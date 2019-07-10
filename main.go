@@ -24,6 +24,7 @@ func main() {
 	mux.HandleFunc("/workflow/", controller.Index)
 	//-------------------------流程定义----------------------
 	mux.HandleFunc("/workflow/procdef/save", controller.SaveProcdef)
+	mux.HandleFunc("/workflow/procdef/saveByToken", controller.SaveProcdefByToken)
 	mux.HandleFunc("/workflow/procdef/findAll", controller.FindAllProcdefPage)
 	mux.HandleFunc("/workflow/procdef/delById", controller.DelProcdefByID)
 	// -----------------------流程实例-----------------------

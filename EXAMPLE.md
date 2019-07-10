@@ -30,6 +30,41 @@ docker run  -e DbType=mysql -e DbLogMode=false -e DbName=test -e DbHost=localhos
 
   如果返回：{"data":"1","ok":true} ，1表示流程实例的id,true表示成功了
 
+
+  ---------------------------------------------------------------
+  或 通过 POST 访问： http://localhost:8080/workflow/procdef/saveByToken (后台通过 token 从redis查询用户信息 userinfo，token可以保存在 Authorization 里
+  面 或者 reques参数里)
+
+// UserInfo 用户信息
+
+  type UserInfo struct {
+
+    Company string `json:"company"`
+
+    // 用户所属部门
+    Department string `json:"department"`
+
+    Username   string `json:"username"`
+
+    // 用户的角色
+
+    Roles []string `json:"roles"`
+
+    // 用户负责的部门，用户是哪些部门的主管
+
+    Departments []string `json:"departments"`
+
+  }
+
+  在config.json 里 配置 redis 连接：
+
+  "RedisCluster": "false",  // false表示redis是单点，true表示redis是集群
+  "RedisHost": "localhost",
+  "RedisPort": "6379",
+  "RedisPassword": "",
+
+--------------------------------------------------------------
+
 # 2.2 查询流程定义
 
   通过 POST 访问： http://localhost:8080/workflow/procdef/findAll

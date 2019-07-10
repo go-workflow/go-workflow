@@ -10,6 +10,39 @@ import (
 	"github.com/mumushuiding/util"
 )
 
+// SaveProcdefByToken SaveProcdefByToken
+func SaveProcdefByToken(writer http.ResponseWriter, request *http.Request) {
+	if request.Method != "POST" {
+		util.ResponseErr(writer, "只支持Post方法！！Only support Post ")
+		return
+	}
+	token, err := GetToken(request)
+	if err != nil {
+		util.ResponseErr(writer, err)
+		return
+	}
+	var procdef = service.Procdef{}
+	err = util.Body2Struct(request, &procdef)
+	if err != nil {
+		util.ResponseErr(writer, err)
+		return
+	}
+	if len(procdef.Name) == 0 {
+		util.ResponseErr(writer, "流程名称 name 不能为空")
+		return
+	}
+	if procdef.Resource == nil || len(procdef.Resource.Name) == 0 {
+		util.ResponseErr(writer, "字段 resource 不能为空")
+		return
+	}
+	id, err := procdef.SaveProcdefByToken(token)
+	if err != nil {
+		util.ResponseErr(writer, err)
+		return
+	}
+	util.Response(writer, fmt.Sprintf("%d", id), true)
+}
+
 // SaveProcdef save new procdefnition
 // 保存流程定义
 func SaveProcdef(writer http.ResponseWriter, request *http.Request) {
@@ -29,6 +62,10 @@ func SaveProcdef(writer http.ResponseWriter, request *http.Request) {
 	}
 	if len(procdef.Company) == 0 {
 		util.ResponseErr(writer, "字段 company 不能为空")
+		return
+	}
+	if len(procdef.Name) == 0 {
+		util.ResponseErr(writer, "流程名称 name 不能为空")
 		return
 	}
 	if procdef.Resource == nil || len(procdef.Resource.Name) == 0 {

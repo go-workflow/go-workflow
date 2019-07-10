@@ -65,6 +65,24 @@ func GetResourceByID(id int) (*flow.Node, int, error) {
 	return node, prodef.ID, err
 }
 
+// SaveProcdefByToken SaveProcdefByToken
+func (p *Procdef) SaveProcdefByToken(token string) (int, error) {
+	// 根据 token 获取用户信息
+	userinfo, err := GetUserinfoFromRedis(token)
+	if err != nil {
+		return 0, err
+	}
+	if len(userinfo.Company) == 0 {
+		return 0, errors.New("公司 company 不能为空")
+	}
+	if len(userinfo.Username) == 0 {
+		return 0, errors.New("用户 username 不能为空")
+	}
+	p.Company = userinfo.Company
+	p.Userid = userinfo.Username
+	return p.SaveProcdef()
+}
+
 // SaveProcdef 保存
 func (p *Procdef) SaveProcdef() (id int, err error) {
 	// 流程定义有效性检验
@@ -89,9 +107,6 @@ func (p *Procdef) SaveProcdef() (id int, err error) {
 // SaveProcdef 保存
 func SaveProcdef(p *model.Procdef) (id int, err error) {
 	// 参数是否为空判定
-	if len(p.Userid) == 0 || len(p.Name) == 0 || len(p.Company) == 0 || len(p.Resource) == 0 {
-		return 0, errors.New("userid，name,company,resource can not be null  不能为空")
-	}
 	saveLock.Lock()
 	defer saveLock.Unlock()
 	old, err := GetProcdefLatestByNameAndCompany(p.Name, p.Company)
