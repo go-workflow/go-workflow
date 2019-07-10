@@ -26,6 +26,15 @@ func (p *Procdef) Save() (ID int, err error) {
 	return p.ID, nil
 }
 
+// SaveTx SaveTx
+func (p *Procdef) SaveTx(tx *gorm.DB) error {
+	err := tx.Create(p).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // GetProcdefLatestByNameAndCompany :get latest procdef by name and company
 // 根据名字和公司查询最新的流程定义
 func GetProcdefLatestByNameAndCompany(name, company string) (*Procdef, error) {
@@ -51,6 +60,11 @@ func DelProcdefByID(id int) error {
 	return err
 }
 
+// DelProcdefByIDTx DelProcdefByIDTx
+func DelProcdefByIDTx(id int, tx *gorm.DB) error {
+	return tx.Where("id = ?", id).Delete(&Procdef{}).Error
+}
+
 // FindProcdefsWithCountAndPaged return result with total count and error
 // 返回查询结果和总条数
 func FindProcdefsWithCountAndPaged(pageIndex, pageSize int, maps map[string]interface{}) (datas []*Procdef, count int, err error) {
@@ -63,4 +77,13 @@ func FindProcdefsWithCountAndPaged(pageIndex, pageSize int, maps map[string]inte
 		return nil, 0, err
 	}
 	return datas, count, nil
+}
+
+// MoveProcdefToHistoryByIDTx 将流程定义移至历史纪录表
+func MoveProcdefToHistoryByIDTx(ID int, tx *gorm.DB) error {
+	err := tx.Exec("insert into procdef_history select * from procdef where id=?", ID).Error
+	if err != nil {
+		return err
+	}
+	return DelProcdefByIDTx(ID, tx)
 }

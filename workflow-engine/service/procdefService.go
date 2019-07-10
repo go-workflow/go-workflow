@@ -65,17 +65,6 @@ func GetResourceByID(id int) (*flow.Node, int, error) {
 	return node, prodef.ID, err
 }
 
-// ExistsProcdefByNameAndCompany if exists
-// 查询流程定义是否存在
-func ExistsProcdefByNameAndCompany(name, company string) (yes bool, version int, err error) {
-	p, err := model.GetProcdefLatestByNameAndCompany(name, company)
-	if p == nil {
-		return false, 1, err
-	}
-	version = p.Version + 1
-	return true, version, err
-}
-
 // SaveProcdef 保存
 func (p *Procdef) SaveProcdef() (id int, err error) {
 	// 流程定义有效性检验
@@ -105,16 +94,51 @@ func SaveProcdef(p *model.Procdef) (id int, err error) {
 	}
 	saveLock.Lock()
 	defer saveLock.Unlock()
-	// check if exists
-	// 判断是否存在
-	_, version, err := ExistsProcdefByNameAndCompany(p.Name, p.Company)
+	// // check if exists
+	// // 判断是否存在
+	// _, version, err := ExistsProcdefByNameAndCompany(p.Name, p.Company)
+	// if err != nil {
+	// 	return 0, err
+	// }
+
+	// p.Version = version
+	// p.DeployTime = util.FormatDate(time.Now(), util.YYYY_MM_DD_HH_MM_SS)
+	old, err := GetProcdefLatestByNameAndCompany(p.Name, p.Company)
 	if err != nil {
 		return 0, err
 	}
-
-	p.Version = version
 	p.DeployTime = util.FormatDate(time.Now(), util.YYYY_MM_DD_HH_MM_SS)
-	return p.Save()
+	if old == nil {
+		p.Version = 1
+		return p.Save()
+	}
+	tx := model.GetTx()
+	// 保存新版本
+	p.Version = old.Version + 1
+	err = p.SaveTx(tx)
+	if err != nil {
+		tx.Rollback()
+		return 0, err
+	}
+	// 转移旧版本
+	err = model.MoveProcdefToHistoryByIDTx(old.ID, tx)
+	if err != nil {
+		tx.Rollback()
+		return 0, err
+	}
+	tx.Commit()
+	return p.ID, nil
+}
+
+// ExistsProcdefByNameAndCompany if exists
+// 查询流程定义是否存在
+func ExistsProcdefByNameAndCompany(name, company string) (yes bool, version int, err error) {
+	p, err := GetProcdefLatestByNameAndCompany(name, company)
+	if p == nil {
+		return false, 1, err
+	}
+	version = p.Version + 1
+	return true, version, err
 }
 
 // FindAllPageAsJSON find by page and  transform result to string

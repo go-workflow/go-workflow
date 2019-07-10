@@ -13,6 +13,12 @@ import (
 	"github.com/go-workflow/go-workflow/workflow-engine/service"
 )
 
+func crossOrigin(h http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		h(w, r)
+	}
+}
 func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/workflow/", controller.Index)
@@ -21,8 +27,9 @@ func main() {
 	mux.HandleFunc("/workflow/procdef/findAll", controller.FindAllProcdefPage)
 	mux.HandleFunc("/workflow/procdef/delById", controller.DelProcdefByID)
 	// -----------------------流程实例-----------------------
-	mux.HandleFunc("/workflow/process/start", controller.StartProcessInstance)        // 启动流程
-	mux.HandleFunc("/workflow/process/findTask", controller.FindMyProcInstPageAsJSON) // 查询需要我审批的流程
+	mux.HandleFunc("/workflow/process/start", controller.StartProcessInstance)               // 启动流程
+	mux.HandleFunc("/workflow/process/startByToken", controller.StartProcessInstanceByToken) // 启动流程
+	mux.HandleFunc("/workflow/process/findTask", controller.FindMyProcInstPageAsJSON)        // 查询需要我审批的流程
 	mux.HandleFunc("/workflow/process/findTaskByToken", controller.FindMyProcInstByToken)
 	mux.HandleFunc("/workflow/process/startByMyself", controller.StartByMyself)   // 查询我启动的流程
 	mux.HandleFunc("/workflow/process/FindProcNotify", controller.FindProcNotify) // 查询抄送我的流程
@@ -68,8 +75,13 @@ func main() {
 		MaxHeaderBytes: 1 << 20,
 	}
 	log.Printf("the application start up at port%s", server.Addr)
-	err = server.ListenAndServe()
+	if config.TLSOpen == "true" {
+		err = server.ListenAndServeTLS(config.TLSCrt, config.TLSKey)
+	} else {
+		err = server.ListenAndServe()
+	}
 	if err != nil {
 		log.Printf("Server err: %v", err)
 	}
+
 }

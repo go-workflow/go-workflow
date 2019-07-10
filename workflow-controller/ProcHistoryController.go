@@ -41,7 +41,7 @@ func FindProcHistoryByToken(writer http.ResponseWriter, request *http.Request) {
 
 // FindProcHistory 查询我的审批纪录
 func FindProcHistory(writer http.ResponseWriter, request *http.Request) {
-	if model.RedisClient != nil {
+	if model.RedisOpen {
 		util.ResponseErr(writer, "已经连接 redis，请使用/workflow/procHistory/findTaskByToken")
 		return
 	}
@@ -98,6 +98,8 @@ func StartHistoryByMyself(writer http.ResponseWriter, request *http.Request) {
 	}
 	fmt.Fprintf(writer, result)
 }
+
+// FindProcHistoryNotify 查询抄送我的流程
 func FindProcHistoryNotify(writer http.ResponseWriter, request *http.Request) {
 	if request.Method != "POST" {
 		util.ResponseErr(writer, "只支持POST方法")

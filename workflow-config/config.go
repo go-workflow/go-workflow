@@ -26,6 +26,9 @@ type Configuration struct {
 	RedisHost      string
 	RedisPort      string
 	RedisPassword  string
+	TLSOpen        string
+	TLSCrt         string
+	TLSKey         string
 }
 
 // Config 数据库配置

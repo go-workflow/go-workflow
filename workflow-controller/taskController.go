@@ -18,7 +18,7 @@ func WithDrawTask(writer http.ResponseWriter, request *http.Request) {
 		util.ResponseErr(writer, "只支持Post方法！！Only support Post ")
 		return
 	}
-	if model.RedisClient != nil {
+	if model.RedisOpen {
 		util.ResponseErr(writer, "已经连接redis缓存，请使用方法 /workflow/task/withdrawByToken ")
 		return
 	}
@@ -42,7 +42,7 @@ func WithDrawTask(writer http.ResponseWriter, request *http.Request) {
 		util.ResponseErr(writer, "字段company不能为空！")
 		return
 	}
-	err = service.WithDrawTask(taskRe.TaskID, taskRe.ProcInstID, taskRe.UserID, taskRe.Company,taskRe.Comment)
+	err = service.WithDrawTask(taskRe.TaskID, taskRe.ProcInstID, taskRe.UserID, taskRe.Company, taskRe.Comment)
 	if err != nil {
 		util.ResponseErr(writer, err)
 		return
@@ -133,7 +133,7 @@ func CompleteTask(writer http.ResponseWriter, request *http.Request) {
 		util.ResponseErr(writer, "只支持Post方法！！Only support Post ")
 		return
 	}
-	if model.RedisClient != nil {
+	if model.RedisOpen {
 		util.ResponseErr(writer, "已经连接redis缓存，请使用方法 /workflow/task/completeByToken")
 		return
 	}

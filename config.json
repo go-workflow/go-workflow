@@ -14,5 +14,8 @@
   "RedisCluster": "false",
   "RedisHost": "localhost",
   "RedisPort": "6379",
-  "RedisPassword": ""
+  "RedisPassword": "",
+  "TLSOpen": "false",
+  "TLSCrt": "server.crt",
+  "TLSKey": "server.key"
 }

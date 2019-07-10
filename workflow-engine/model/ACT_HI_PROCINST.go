@@ -199,7 +199,7 @@ func DelProcInstByID(id int) error {
 // DelProcInstByIDTx DelProcInstByIDTx
 // 事务
 func DelProcInstByIDTx(id int, tx *gorm.DB) error {
-	return db.Where("id=?", id).Delete(&ProcInst{}).Error
+	return tx.Where("id=?", id).Delete(&ProcInst{}).Error
 }
 
 // UpdateTx UpdateTx

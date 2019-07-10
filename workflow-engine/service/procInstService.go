@@ -81,6 +81,28 @@ func FindMyProcInstByToken(token string, receiver *ProcessPageReceiver) (string,
 	return FindAllPageAsJSON(receiver)
 }
 
+// StartProcessInstanceByToken 启动流程
+func StartProcessInstanceByToken(token string, p *ProcessReceiver) (int, error) {
+	// 根据 token 获取用户信息
+	userinfo, err := GetUserinfoFromRedis(token)
+	if err != nil {
+		return 0, err
+	}
+	if len(userinfo.Company) == 0 {
+		return 0, errors.New("公司 company 不能为空")
+	}
+	if len(userinfo.Username) == 0 {
+		return 0, errors.New("用户 username 不能为空")
+	}
+	if len(userinfo.Department) == 0 {
+		return 0, errors.New("用户所属部门 department 不能为空")
+	}
+	p.Company = userinfo.Company
+	p.Department = userinfo.Department
+	p.UserID = userinfo.Username
+	return p.StartProcessInstanceByID(p.Var)
+}
+
 // StartProcessInstanceByID 启动流程
 func (p *ProcessReceiver) StartProcessInstanceByID(variable *map[string]string) (int, error) {
 	// times := time.Now()

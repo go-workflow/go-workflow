@@ -55,7 +55,8 @@ func Setup() {
 		AutoMigrate(&ExecutionHistory{}).
 		AutoMigrate(&IdentitylinkHistory{}).
 		AutoMigrate(&ProcInstHistory{}).
-		AutoMigrate(&TaskHistory{})
+		AutoMigrate(&TaskHistory{}).
+		AutoMigrate(&ProcdefHistory{})
 	db.Model(&Procdef{}).AddIndex("idx_id", "id")
 	db.Model(&ProcInst{}).AddIndex("idx_id", "id")
 	db.Model(&Execution{}).AddForeignKey("proc_inst_id", "proc_inst(id)", "CASCADE", "RESTRICT").AddIndex("idx_id", "id")
