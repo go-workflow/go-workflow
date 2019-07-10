@@ -5,15 +5,15 @@ import "github.com/jinzhu/gorm"
 // Procdef 流程定义表
 type Procdef struct {
 	Model
-	Name    string `json:"name"`
-	Version int    `json:"version"`
+	Name    string `json:"name,omitempty"`
+	Version int    `json:"version,omitempty"`
 	// 流程定义json字符串
-	Resource string `gorm:"size:10000" json:"resource"`
+	Resource string `gorm:"size:10000" json:"resource,omitempty"`
 	// 用户id
-	Userid string `json:"userid"`
+	Userid string `json:"userid,omitempty"`
 	// 用户所在公司
-	Company    string `json:"company"`
-	DeployTime string `json:"deployTime"`
+	Company    string `json:"company,omitempty"`
+	DeployTime string `json:"deployTime,omitempty"`
 }
 
 // Save save and return id
@@ -68,7 +68,7 @@ func DelProcdefByIDTx(id int, tx *gorm.DB) error {
 // FindProcdefsWithCountAndPaged return result with total count and error
 // 返回查询结果和总条数
 func FindProcdefsWithCountAndPaged(pageIndex, pageSize int, maps map[string]interface{}) (datas []*Procdef, count int, err error) {
-	err = db.Where(maps).Offset((pageIndex - 1) * pageSize).Limit(pageSize).Find(&datas).Error
+	err = db.Select("id,name,version,userid,deploy_time").Where(maps).Offset((pageIndex - 1) * pageSize).Limit(pageSize).Find(&datas).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, 0, err
 	}

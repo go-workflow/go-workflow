@@ -94,15 +94,6 @@ func SaveProcdef(p *model.Procdef) (id int, err error) {
 	}
 	saveLock.Lock()
 	defer saveLock.Unlock()
-	// // check if exists
-	// // 判断是否存在
-	// _, version, err := ExistsProcdefByNameAndCompany(p.Name, p.Company)
-	// if err != nil {
-	// 	return 0, err
-	// }
-
-	// p.Version = version
-	// p.DeployTime = util.FormatDate(time.Now(), util.YYYY_MM_DD_HH_MM_SS)
 	old, err := GetProcdefLatestByNameAndCompany(p.Name, p.Company)
 	if err != nil {
 		return 0, err
