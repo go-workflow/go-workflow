@@ -120,8 +120,6 @@ func FindMyProcInstPageAsJSON(writer http.ResponseWriter, request *http.Request)
 // FindMyProcInstByToken FindMyProcInstByToken
 // 查询待办的流程
 func FindMyProcInstByToken(writer http.ResponseWriter, request *http.Request) {
-	// writer.Header().Set("Access-Control-Allow-Origin", "*")             //允许访问所有域
-	// writer.Header().Add("Access-Control-Allow-Headers", "Content-Type") //header的类型
 	if request.Method != "POST" {
 		util.ResponseErr(writer, "只支持Post方法！！")
 		return

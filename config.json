@@ -17,5 +17,8 @@
   "RedisPassword": "",
   "TLSOpen": "false",
   "TLSCrt": "server.crt",
-  "TLSKey": "server.key"
+  "TLSKey": "server.key",
+  "AccessControlAllowOrigin": "*",
+  "AccessControlAllowHeaders": "*",
+  "AccessControlAllowMethods": "POST, GET, PUT, OPTIONS, DELETE, PATCH"
 }

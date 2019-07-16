@@ -10,9 +10,10 @@ import (
 
 // Configuration 数据库配置结构
 type Configuration struct {
-	Port           string
-	ReadTimeout    string
-	WriteTimeout   string
+	Port         string
+	ReadTimeout  string
+	WriteTimeout string
+	// 数据库设置
 	DbLogMode      string
 	DbType         string
 	DbName         string
@@ -22,13 +23,18 @@ type Configuration struct {
 	DbPassword     string
 	DbMaxIdleConns string
 	DbMaxOpenConns string
-	RedisCluster   string
-	RedisHost      string
-	RedisPort      string
-	RedisPassword  string
-	TLSOpen        string
-	TLSCrt         string
-	TLSKey         string
+	// redis 设置
+	RedisCluster  string
+	RedisHost     string
+	RedisPort     string
+	RedisPassword string
+	TLSOpen       string
+	TLSCrt        string
+	TLSKey        string
+	// 跨域设置
+	AccessControlAllowOrigin  string
+	AccessControlAllowHeaders string
+	AccessControlAllowMethods string
 }
 
 // Config 数据库配置

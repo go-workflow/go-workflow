@@ -59,8 +59,11 @@ docker run  -e DbType=mysql -e DbLogMode=false -e DbName=test -e DbHost=localhos
   在config.json 里 配置 redis 连接：
 
   "RedisCluster": "false",  // false表示redis是单点，true表示redis是集群
+
   "RedisHost": "localhost",
+
   "RedisPort": "6379",
+  
   "RedisPassword": "",
 
 --------------------------------------------------------------
