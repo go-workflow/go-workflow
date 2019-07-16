@@ -24,6 +24,7 @@ type TaskReceiver struct {
 	Company    string `json:"company,omitempty"`
 	ProcInstID int    `json:"procInstID,omitempty"`
 	Comment    string `json:"comment,omitempty"`
+	Candidate  string `json:"candidate,omitempty"`
 }
 
 var completeLock sync.Mutex
@@ -72,7 +73,7 @@ func CompleteByToken(token string, receiver *TaskReceiver) error {
 	if err != nil {
 		return err
 	}
-	err = Complete(receiver.TaskID, userinfo.Username, userinfo.Company, receiver.Comment, pass)
+	err = Complete(receiver.TaskID, userinfo.Username, userinfo.Company, receiver.Comment, receiver.Candidate, pass)
 	if err != nil {
 		return err
 	}
@@ -81,9 +82,9 @@ func CompleteByToken(token string, receiver *TaskReceiver) error {
 
 // Complete Complete
 // 审批
-func Complete(taskID int, userID, company, comment string, pass bool) error {
+func Complete(taskID int, userID, company, comment, candidate string, pass bool) error {
 	tx := model.GetTx()
-	err := CompleteTaskTx(taskID, userID, company, comment, pass, tx)
+	err := CompleteTaskTx(taskID, userID, company, comment, candidate, pass, tx)
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -139,7 +140,7 @@ func UpdateTaskWhenComplete(taskID int, userID string, pass bool, tx *gorm.DB) (
 
 // CompleteTaskTx CompleteTaskTx
 // 执行任务
-func CompleteTaskTx(taskID int, userID, company, comment string, pass bool, tx *gorm.DB) error {
+func CompleteTaskTx(taskID int, userID, company, comment, candidate string, pass bool, tx *gorm.DB) error {
 
 	//更新任务
 	task, err := UpdateTaskWhenComplete(taskID, userID, pass, tx)
@@ -175,7 +176,7 @@ func CompleteTaskTx(taskID int, userID, company, comment string, pass bool, tx *
 	// if err != nil {
 	// 	return err
 	// }
-	err = MoveStageByProcInstID(userID, company, comment, task.ID, task.ProcInstID, task.Step, pass, tx)
+	err = MoveStageByProcInstID(userID, company, comment, candidate, task.ID, task.ProcInstID, task.Step, pass, tx)
 	if err != nil {
 		return err
 	}
@@ -262,7 +263,7 @@ func WithDrawTask(taskID, procInstID int, userID, company, comment string) error
 		return err
 	}
 	// 撤回
-	err = MoveStageByProcInstID(userID, company, comment, currentTask.ID, procInstID, currentTask.Step, pass, tx)
+	err = MoveStageByProcInstID(userID, company, comment, "", currentTask.ID, procInstID, currentTask.Step, pass, tx)
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -273,17 +274,17 @@ func WithDrawTask(taskID, procInstID int, userID, company, comment string) error
 }
 
 // MoveStageByProcInstID MoveStageByProcInstID
-func MoveStageByProcInstID(userID, company, comment string, taskID, procInstID, step int, pass bool, tx *gorm.DB) (err error) {
+func MoveStageByProcInstID(userID, company, comment, candidate string, taskID, procInstID, step int, pass bool, tx *gorm.DB) (err error) {
 	nodeInfos, err := GetExecNodeInfosByProcInstID(procInstID)
 	if err != nil {
 		return err
 	}
-	return MoveStage(nodeInfos, userID, company, comment, taskID, procInstID, step, pass, tx)
+	return MoveStage(nodeInfos, userID, company, comment, candidate, taskID, procInstID, step, pass, tx)
 }
 
 // MoveStage MoveStage
 // 流程流转
-func MoveStage(nodeInfos []*flow.NodeInfo, userID, company, comment string, taskID, procInstID, step int, pass bool, tx *gorm.DB) (err error) {
+func MoveStage(nodeInfos []*flow.NodeInfo, userID, company, comment, candidate string, taskID, procInstID, step int, pass bool, tx *gorm.DB) (err error) {
 	// 添加上一步的参与人
 	err = AddParticipantTx(userID, company, comment, taskID, procInstID, step, tx)
 	if err != nil {
@@ -299,6 +300,10 @@ func MoveStage(nodeInfos []*flow.NodeInfo, userID, company, comment string, task
 		if step < 0 {
 			return errors.New("处于开始位置，无法回退到上一个节点")
 		}
+	}
+	// 指定下一步执行人
+	if len(candidate) > 0 {
+		nodeInfos[step].Aprover = candidate
 	}
 	// 判断下一流程： 如果是审批人是：抄送人
 	// fmt.Printf("下一审批人类型：%s\n", nodeInfos[step].AproverType)
@@ -321,7 +326,7 @@ func MoveStage(nodeInfos []*flow.NodeInfo, userID, company, comment string, task
 		if err != nil {
 			return err
 		}
-		return MoveStage(nodeInfos, userID, company, comment, taskID, procInstID, step, pass, tx)
+		return MoveStage(nodeInfos, userID, company, comment, candidate, taskID, procInstID, step, pass, tx)
 	}
 	if pass {
 		return MoveToNextStage(nodeInfos, userID, company, taskID, procInstID, step, tx)

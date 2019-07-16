@@ -166,7 +166,7 @@ func CompleteTask(writer http.ResponseWriter, request *http.Request) {
 		util.ResponseErr(writer, "字段company不能为空！")
 		return
 	}
-	err = service.Complete(taskRe.TaskID, taskRe.UserID, taskRe.Company, taskRe.Comment, pass)
+	err = service.Complete(taskRe.TaskID, taskRe.UserID, taskRe.Company, taskRe.Comment, taskRe.Candidate, pass)
 	if err != nil {
 		util.ResponseErr(writer, err)
 		return
