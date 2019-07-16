@@ -256,7 +256,12 @@ func MoveFinishedProcInstToHistory() error {
 	}
 	for _, v := range proinsts {
 		// 复制 proc_inst
-		err := copyProcToHistory(v)
+		duration, err := util.TimeStrSub(v.EndTime, v.StartTime, util.YYYY_MM_DD_HH_MM_SS)
+		if err != nil {
+			return err
+		}
+		v.Duration = duration
+		err = copyProcToHistory(v)
 		if err != nil {
 			return err
 		}

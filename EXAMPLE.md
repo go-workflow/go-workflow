@@ -90,7 +90,7 @@ docker run  -e DbType=mysql -e DbLogMode=false -e DbName=test -e DbHost=localhos
 
   POST参数：{"taskID":2,"pass":"true","userID":"11029","company":"A公司","comment": "评论备注","candidate": "王五"}
 
-  参数详解： taskID代表当前任务id，true表示通过，false表示驳回,candidate指定下一步执行人（可以不指定）
+  参数详解： taskID代表当前任务id，true表示通过，false表示驳回,candidate指定下一步执行人或者审批组如：candidate: "人事组"（一般不指定）
 
   （注意：整个流程框架，所有关于 userID的值最好是用户名，用户名不可重复）
 # 4.2 撤回
