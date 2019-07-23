@@ -24,12 +24,13 @@ type ProcInst struct {
 	// 审批人
 	Candidate string `json:"candidate"`
 	// 当前任务
-	TaskID      int    `json:"taskID"`
-	StartTime   string `json:"startTime"`
-	EndTime     string `json:"endTime"`
-	Duration    int64  `json:"duration"`
-	StartUserID string `json:"startUserId"`
-	IsFinished  bool   `gorm:"default:false" json:"isFinished"`
+	TaskID        int    `json:"taskID"`
+	StartTime     string `json:"startTime"`
+	EndTime       string `json:"endTime"`
+	Duration      int64  `json:"duration"`
+	StartUserID   string `json:"startUserId"`
+	StartUserName string `json:"startUserName"`
+	IsFinished    bool   `gorm:"default:false" json:"isFinished"`
 }
 
 // GroupsNotNull 候选组

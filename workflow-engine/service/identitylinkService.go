@@ -94,10 +94,11 @@ func AddCandidateUserTx(userID, company string, step, taskID, procInstID int, tx
 
 //AddParticipantTx AddParticipantTx
 // 添加任务参与人
-func AddParticipantTx(userID, company, comment string, taskID, procInstID, step int, tx *gorm.DB) error {
+func AddParticipantTx(userID, username, company, comment string, taskID, procInstID, step int, tx *gorm.DB) error {
 	i := &model.Identitylink{
 		Type:       model.IdentityTypes[model.PARTICIPANT],
 		UserID:     userID,
+		UserName:   username,
 		ProcInstID: procInstID,
 		Step:       step,
 		Company:    company,

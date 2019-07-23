@@ -10,7 +10,8 @@ type Procdef struct {
 	// 流程定义json字符串
 	Resource string `gorm:"size:10000" json:"resource,omitempty"`
 	// 用户id
-	Userid string `json:"userid,omitempty"`
+	Userid   string `json:"userid,omitempty"`
+	Username string `json:"username,omitempty"`
 	// 用户所在公司
 	Company    string `json:"company,omitempty"`
 	DeployTime string `json:"deployTime,omitempty"`

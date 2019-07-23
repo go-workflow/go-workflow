@@ -1,14 +1,20 @@
 # 1.安装
 # 1.1 安装mysql 
+
   目前只支持mysql数据库，测试之前先安装好数据库
+
 # 1.2 docker 安装最新版 go-workflow 微服务
+
 docker run  -e DbType=mysql -e DbLogMode=false -e DbName=test -e DbHost=localhost -e DbUser=root -e DbPassword=123 -p 8080:8080 registry.cn-hangzhou.aliyuncs.com/mumushuiding/go-workflow:latest
 
 # 1.3 通过 go get 获取
 
  1.go get https://github.com/go-workflow/go-workflow
+
  2.进入根目录，打开config.json文件,修改数据库连接配置
+
  3. $ go build
+
  4. $ go-workflow.exe
 
 # 1.4 部署到 K8s
@@ -17,7 +23,6 @@ docker run  -e DbType=mysql -e DbLogMode=false -e DbName=test -e DbHost=localhos
 
 # 2.流程存储
 
-  （注意：整个流程框架，所有关于 userID的值最好是用户名，用户名不可重复）
 
 # 2.1 存储流程定义。
   通过 Post 访问： http://localhost:8080/workflow/procdef/save
@@ -42,8 +47,13 @@ docker run  -e DbType=mysql -e DbLogMode=false -e DbName=test -e DbHost=localhos
     Company string `json:"company"`
 
     // 用户所属部门
+
     Department string `json:"department"`
 
+    // 用户ID
+
+    ID string `json:"ID"`
+    
     Username   string `json:"username"`
 
     // 用户的角色

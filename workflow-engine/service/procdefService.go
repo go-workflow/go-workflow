@@ -20,7 +20,8 @@ type Procdef struct {
 	// 流程定义json字符串
 	Resource *flow.Node `json:"resource"`
 	// 用户id
-	Userid string `jsong:"userid"`
+	Userid   string `json:"userid"`
+	Username string `json:"username"`
 	// 用户所在公司
 	Company   string `json:"company"`
 	PageSize  int    `json:"pageSize"`
@@ -78,8 +79,12 @@ func (p *Procdef) SaveProcdefByToken(token string) (int, error) {
 	if len(userinfo.Username) == 0 {
 		return 0, errors.New("用户 username 不能为空")
 	}
+	if len(userinfo.ID) == 0 {
+		return 0, errors.New("用户 ID 不能为空")
+	}
 	p.Company = userinfo.Company
-	p.Userid = userinfo.Username
+	p.Userid = userinfo.ID
+	p.Username = userinfo.Username
 	return p.SaveProcdef()
 }
 
@@ -98,6 +103,7 @@ func (p *Procdef) SaveProcdef() (id int, err error) {
 	var procdef = model.Procdef{
 		Name:     p.Name,
 		Userid:   p.Userid,
+		Username: p.Username,
 		Company:  p.Company,
 		Resource: resource,
 	}
@@ -167,7 +173,7 @@ func (p *Procdef) FindAll() ([]*model.Procdef, int, error) {
 func (p *Procdef) getMaps() map[string]interface{} {
 	maps := make(map[string]interface{})
 	if len(p.Name) > 0 {
-		maps["Name"] = p.Name
+		maps["name"] = p.Name
 	}
 	if len(p.Company) > 0 {
 		maps["company"] = p.Company

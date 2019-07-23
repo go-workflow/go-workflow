@@ -25,11 +25,15 @@ func FindProcHistoryByToken(token string, receiver *ProcessPageReceiver) (string
 	if len(userinfo.Company) == 0 {
 		return "", errors.New("公司 company 不能为空")
 	}
-	if len(userinfo.Username) == 0 {
-		return "", errors.New("用户 username 不能为空")
+	// if len(userinfo.Username) == 0 {
+	// 	return "", errors.New("用户 username 不能为空")
+	// }
+	if len(userinfo.ID) == 0 {
+		return "", errors.New("用户 ID 不能为空")
 	}
 	receiver.Company = userinfo.Company
-	receiver.UserID = userinfo.Username
+	receiver.UserID = userinfo.ID
+	// receiver.Username = userinfo.Username
 	return FindProcHistory(receiver)
 }
 func findAllProcHistory(receiver *ProcessPageReceiver) ([]*model.ProcInstHistory, int, error) {

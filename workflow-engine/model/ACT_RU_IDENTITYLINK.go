@@ -10,6 +10,7 @@ type Identitylink struct {
 	Group      string `json:"group,omitempty"`
 	Type       string `json:"type,omitempty"`
 	UserID     string `json:"userid,omitempty"`
+	UserName   string `json:"username,omitempty"`
 	TaskID     int    `json:"taskID,omitempty"`
 	Step       int    `json:"step"`
 	ProcInstID int    `json:"procInstID,omitempty"`
@@ -85,6 +86,6 @@ func IfParticipantByTaskID(userID, company string, taskID int) (bool, error) {
 // FindParticipantByProcInstID 查询参与审批的人
 func FindParticipantByProcInstID(procInstID int) ([]*Identitylink, error) {
 	var datas []*Identitylink
-	err := db.Select("id,user_id,step,comment").Where("proc_inst_id=? and type=?", procInstID, IdentityTypes[PARTICIPANT]).Order("id asc").Find(&datas).Error
+	err := db.Select("id,user_id,user_name,step,comment").Where("proc_inst_id=? and type=?", procInstID, IdentityTypes[PARTICIPANT]).Order("id asc").Find(&datas).Error
 	return datas, err
 }

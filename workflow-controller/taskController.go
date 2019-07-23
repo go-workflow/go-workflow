@@ -42,7 +42,7 @@ func WithDrawTask(writer http.ResponseWriter, request *http.Request) {
 		util.ResponseErr(writer, "字段company不能为空！")
 		return
 	}
-	err = service.WithDrawTask(taskRe.TaskID, taskRe.ProcInstID, taskRe.UserID, taskRe.Company, taskRe.Comment)
+	err = service.WithDrawTask(taskRe.TaskID, taskRe.ProcInstID, taskRe.UserID, taskRe.UserName, taskRe.Company, taskRe.Comment)
 	if err != nil {
 		util.ResponseErr(writer, err)
 		return
@@ -162,11 +162,15 @@ func CompleteTask(writer http.ResponseWriter, request *http.Request) {
 		util.ResponseErr(writer, "字段userID不能为空！")
 		return
 	}
+	if len(taskRe.UserName) == 0 {
+		util.ResponseErr(writer, "字段username不能为空！")
+		return
+	}
 	if len(taskRe.Company) == 0 {
 		util.ResponseErr(writer, "字段company不能为空！")
 		return
 	}
-	err = service.Complete(taskRe.TaskID, taskRe.UserID, taskRe.Company, taskRe.Comment, taskRe.Candidate, pass)
+	err = service.Complete(taskRe.TaskID, taskRe.UserID, taskRe.UserName, taskRe.Company, taskRe.Comment, taskRe.Candidate, pass)
 	if err != nil {
 		util.ResponseErr(writer, err)
 		return

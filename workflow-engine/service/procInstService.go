@@ -15,6 +15,7 @@ import (
 // ProcessReceiver 接收页面传递参数
 type ProcessReceiver struct {
 	UserID     string             `json:"userId"`
+	Username   string             `json:"username"`
 	Company    string             `json:"company"`
 	ProcName   string             `json:"procName"`
 	Title      string             `json:"title"`
@@ -30,6 +31,7 @@ type ProcessPageReceiver struct {
 	// 我所属于的用户组或者角色
 	Groups   []string `josn:"groups"`
 	UserID   string   `json:"userID"`
+	Username string   `json:"username"`
 	Company  string   `json:"company"`
 	ProcName string   `json:"procName"`
 }
@@ -69,13 +71,13 @@ func FindMyProcInstByToken(token string, receiver *ProcessPageReceiver) (string,
 	if len(userinfo.Company) == 0 {
 		return "", errors.New("公司 company 不能为空")
 	}
-	if len(userinfo.Username) == 0 {
-		return "", errors.New("用户 username 不能为空")
+	if len(userinfo.ID) == 0 {
+		return "", errors.New("用户 ID 不能为空")
 	}
 	receiver.Company = userinfo.Company
 	receiver.Departments = userinfo.Departments
 	receiver.Groups = userinfo.Roles
-	receiver.UserID = userinfo.Username
+	receiver.UserID = userinfo.ID
 	// str, _ = util.ToJSONStr(receiver)
 	// fmt.Printf("receiver:%s\n", str)
 	return FindAllPageAsJSON(receiver)
@@ -94,12 +96,16 @@ func StartProcessInstanceByToken(token string, p *ProcessReceiver) (int, error) 
 	if len(userinfo.Username) == 0 {
 		return 0, errors.New("用户 username 不能为空")
 	}
+	if len(userinfo.ID) == 0 {
+		return 0, errors.New("用户 ID 不能为空")
+	}
 	if len(userinfo.Department) == 0 {
 		return 0, errors.New("用户所属部门 department 不能为空")
 	}
 	p.Company = userinfo.Company
 	p.Department = userinfo.Department
-	p.UserID = userinfo.Username
+	p.UserID = userinfo.ID
+	p.Username = userinfo.Username
 	return p.StartProcessInstanceByID(p.Var)
 }
 
@@ -118,13 +124,14 @@ func (p *ProcessReceiver) StartProcessInstanceByID(variable *map[string]string) 
 	tx := model.GetTx()
 	// 新建流程实例
 	var procInst = model.ProcInst{
-		ProcDefID:   prodefID,
-		ProcDefName: procdefName,
-		Title:       p.Title,
-		Department:  p.Department,
-		StartTime:   util.FormatDate(time.Now(), util.YYYY_MM_DD_HH_MM_SS),
-		StartUserID: p.UserID,
-		Company:     p.Company,
+		ProcDefID:     prodefID,
+		ProcDefName:   procdefName,
+		Title:         p.Title,
+		Department:    p.Department,
+		StartTime:     util.FormatDate(time.Now(), util.YYYY_MM_DD_HH_MM_SS),
+		StartUserID:   p.UserID,
+		StartUserName: p.Username,
+		Company:       p.Company,
 	} //开启事务
 	// times = time.Now()
 	procInstID, err := CreateProcInstTx(&procInst, tx) // 事务
@@ -174,7 +181,7 @@ func (p *ProcessReceiver) StartProcessInstanceByID(variable *map[string]string) 
 	//--------------------流转------------------
 	// times = time.Now()
 	// 流程移动到下一环节
-	err = MoveStage(nodeinfos, p.UserID, p.Company, "启动流程", "", task.ID, procInstID, step, true, tx)
+	err = MoveStage(nodeinfos, p.UserID, p.Username, p.Company, "启动流程", "", task.ID, procInstID, step, true, tx)
 	if err != nil {
 		tx.Rollback()
 		return 0, err
@@ -186,14 +193,14 @@ func (p *ProcessReceiver) StartProcessInstanceByID(variable *map[string]string) 
 }
 
 // CreateProcInstByID 新建流程实例
-func CreateProcInstByID(processDefinitionID int, startUserID string) (int, error) {
-	var procInst = model.ProcInst{
-		ProcDefID:   processDefinitionID,
-		StartTime:   util.FormatDate(time.Now(), util.YYYY_MM_DD_HH_MM_SS),
-		StartUserID: startUserID,
-	}
-	return procInst.Save()
-}
+// func CreateProcInstByID(processDefinitionID int, startUserID string) (int, error) {
+// 	var procInst = model.ProcInst{
+// 		ProcDefID:   processDefinitionID,
+// 		StartTime:   util.FormatDate(time.Now(), util.YYYY_MM_DD_HH_MM_SS),
+// 		StartUserID: startUserID,
+// 	}
+// 	return procInst.Save()
+// }
 
 // CreateProcInstTx CreateProcInstTx
 // 开户事务

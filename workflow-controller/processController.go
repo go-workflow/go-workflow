@@ -114,7 +114,7 @@ func FindMyProcInstPageAsJSON(writer http.ResponseWriter, request *http.Request)
 		util.ResponseErr(writer, err)
 		return
 	}
-	util.Response(writer, result, true)
+	fmt.Fprintf(writer, result)
 }
 
 // FindMyProcInstByToken FindMyProcInstByToken
