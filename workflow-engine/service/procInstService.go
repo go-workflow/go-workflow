@@ -15,6 +15,7 @@ import (
 // ProcessReceiver 接收页面传递参数
 type ProcessReceiver struct {
 	UserID     string             `json:"userId"`
+	ProcInstID string             `json:"procInstID"`
 	Username   string             `json:"username"`
 	Company    string             `json:"company"`
 	ProcName   string             `json:"procName"`
@@ -29,11 +30,12 @@ type ProcessPageReceiver struct {
 	// 我分管的部门
 	Departments []string `json:"departments"`
 	// 我所属于的用户组或者角色
-	Groups   []string `josn:"groups"`
-	UserID   string   `json:"userID"`
-	Username string   `json:"username"`
-	Company  string   `json:"company"`
-	ProcName string   `json:"procName"`
+	Groups     []string `josn:"groups"`
+	UserID     string   `json:"userID"`
+	Username   string   `json:"username"`
+	Company    string   `json:"company"`
+	ProcName   string   `json:"procName"`
+	ProcInstID string   `json:"procInstID"`
 }
 
 var copyLock sync.Mutex
@@ -49,6 +51,15 @@ func findAll(pr *ProcessPageReceiver) ([]*model.ProcInst, int, error) {
 	var page = util.Page{}
 	page.PageRequest(pr.PageIndex, pr.PageSize)
 	return model.FindProcInsts(pr.UserID, pr.ProcName, pr.Company, pr.Groups, pr.Departments, pr.PageIndex, pr.PageSize)
+}
+
+// FindProcInstByID FindProcInstByID
+func FindProcInstByID(id int) (string, error) {
+	data, err := model.FindProcInstByID(id)
+	if err != nil {
+		return "", err
+	}
+	return util.ToJSONStr(data)
 }
 
 // FindAllPageAsJSON FindAllPageAsJSON

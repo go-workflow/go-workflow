@@ -36,6 +36,7 @@ func setMux() {
 	Mux.HandleFunc("/api/v1/workflow/process/start", intercept(controller.StartProcessInstance))               // 启动流程
 	Mux.HandleFunc("/api/v1/workflow/process/startByToken", intercept(controller.StartProcessInstanceByToken)) // 启动流程
 	Mux.HandleFunc("/api/v1/workflow/process/findTask", intercept(controller.FindMyProcInstPageAsJSON))        // 查询需要我审批的流程
+	Mux.HandleFunc("/api/v1/workflow/process/findById", intercept(controller.FindProcInstByID))                // 根据id查询流程实例
 	Mux.HandleFunc("/api/v1/workflow/process/findTaskByToken", intercept(controller.FindMyProcInstByToken))
 	Mux.HandleFunc("/api/v1/workflow/process/startByMyself", intercept(controller.StartByMyself))   // 查询我启动的流程
 	Mux.HandleFunc("/api/v1/workflow/process/FindProcNotify", intercept(controller.FindProcNotify)) // 查询抄送我的流程

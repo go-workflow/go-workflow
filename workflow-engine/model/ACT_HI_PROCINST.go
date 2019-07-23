@@ -66,6 +66,16 @@ func StartByMyself(userID, company string, pageIndex, pageSize int) ([]*ProcInst
 	return findProcInsts(maps, pageIndex, pageSize)
 }
 
+// FindProcInstByID FindProcInstByID
+func FindProcInstByID(id int) (*ProcInst, error) {
+	var data = ProcInst{}
+	err := db.Where("id=?", id).Find(&data).Error
+	if err != nil {
+		return nil, err
+	}
+	return &data, nil
+}
+
 // FindProcNotify 查询抄送我的流程
 func FindProcNotify(userID, company string, groups []string, pageIndex, pageSize int) ([]*ProcInst, int, error) {
 	var datas []*ProcInst

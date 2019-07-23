@@ -3,6 +3,7 @@ package controller
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/go-workflow/go-workflow/workflow-engine/model"
 
@@ -212,4 +213,24 @@ func MoveFinishedProcInstToHistory(writer http.ResponseWriter, request *http.Req
 		return
 	}
 	util.ResponseOk(writer)
+}
+
+// FindProcInstByID 根据流程ID查询流程
+func FindProcInstByID(writer http.ResponseWriter, request *http.Request) {
+	request.ParseForm()
+	if len(request.Form["id"]) == 0 {
+		util.ResponseErr(writer, "字段 id 不能为空")
+		return
+	}
+	id, err := strconv.Atoi(request.Form["id"][0])
+	if err != nil {
+		util.ResponseErr(writer, err)
+		return
+	}
+	data, err := service.FindProcInstByID(id)
+	if err != nil {
+		util.ResponseErr(writer, err)
+		return
+	}
+	util.Response(writer, data, true)
 }
