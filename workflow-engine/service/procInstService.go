@@ -69,10 +69,10 @@ func FindMyProcInstByToken(token string, receiver *ProcessPageReceiver) (string,
 		return "", err
 	}
 	if len(userinfo.Company) == 0 {
-		return "", errors.New("公司 company 不能为空")
+		return "", errors.New("保存在redis中的【用户信息 userinfo】字段 company 不能为空")
 	}
 	if len(userinfo.ID) == 0 {
-		return "", errors.New("用户 ID 不能为空")
+		return "", errors.New("保存在redis中的【用户信息 userinfo】字段 ID 不能为空")
 	}
 	receiver.Company = userinfo.Company
 	receiver.Departments = userinfo.Departments
@@ -91,16 +91,16 @@ func StartProcessInstanceByToken(token string, p *ProcessReceiver) (int, error) 
 		return 0, err
 	}
 	if len(userinfo.Company) == 0 {
-		return 0, errors.New("公司 company 不能为空")
+		return 0, errors.New("保存在redis中的【用户信息 userinfo】字段 company 不能为空")
 	}
 	if len(userinfo.Username) == 0 {
-		return 0, errors.New("用户 username 不能为空")
+		return 0, errors.New("保存在redis中的【用户信息 userinfo】字段 username 不能为空")
 	}
 	if len(userinfo.ID) == 0 {
-		return 0, errors.New("用户 ID 不能为空")
+		return 0, errors.New("保存在redis中的【用户信息 userinfo】字段 ID 不能为空")
 	}
 	if len(userinfo.Department) == 0 {
-		return 0, errors.New("用户所属部门 department 不能为空")
+		return 0, errors.New("保存在redis中的【用户信息 userinfo】字段 department 不能为空")
 	}
 	p.Company = userinfo.Company
 	p.Department = userinfo.Department

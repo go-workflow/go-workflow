@@ -7,9 +7,10 @@ import (
 	"strconv"
 	"time"
 
+	router "github.com/go-workflow/go-workflow/workflow-router"
+
 	config "github.com/go-workflow/go-workflow/workflow-config"
 
-	controller "github.com/go-workflow/go-workflow/workflow-controller"
 	model "github.com/go-workflow/go-workflow/workflow-engine/model"
 	"github.com/go-workflow/go-workflow/workflow-engine/service"
 )
@@ -26,37 +27,7 @@ func crossOrigin(h http.HandlerFunc) http.HandlerFunc {
 	}
 }
 func main() {
-	mux := http.NewServeMux()
-	mux.HandleFunc("/workflow/", controller.Index)
-	//-------------------------流程定义----------------------
-	mux.HandleFunc("/workflow/procdef/save", crossOrigin(controller.SaveProcdef))
-	mux.HandleFunc("/workflow/procdef/saveByToken", crossOrigin(controller.SaveProcdefByToken))
-	mux.HandleFunc("/workflow/procdef/findAll", crossOrigin(controller.FindAllProcdefPage))
-	mux.HandleFunc("/workflow/procdef/delById", crossOrigin(controller.DelProcdefByID))
-	// -----------------------流程实例-----------------------
-	mux.HandleFunc("/workflow/process/start", crossOrigin(controller.StartProcessInstance))               // 启动流程
-	mux.HandleFunc("/workflow/process/startByToken", crossOrigin(controller.StartProcessInstanceByToken)) // 启动流程
-	mux.HandleFunc("/workflow/process/findTask", crossOrigin(controller.FindMyProcInstPageAsJSON))        // 查询需要我审批的流程
-	mux.HandleFunc("/workflow/process/findTaskByToken", crossOrigin(controller.FindMyProcInstByToken))
-	mux.HandleFunc("/workflow/process/startByMyself", crossOrigin(controller.StartByMyself))   // 查询我启动的流程
-	mux.HandleFunc("/workflow/process/FindProcNotify", crossOrigin(controller.FindProcNotify)) // 查询抄送我的流程
-	// mux.HandleFunc("/workflow/process/moveToHistory", controller.MoveFinishedProcInstToHistory)
-	// -----------------------任务--------------------------
-	mux.HandleFunc("/workflow/task/complete", crossOrigin(controller.CompleteTask))
-	mux.HandleFunc("/workflow/task/completeByToken", crossOrigin(controller.CompleteTaskByToken))
-	mux.HandleFunc("/workflow/task/withdraw", crossOrigin(controller.WithDrawTask))
-	mux.HandleFunc("/workflow/task/withdrawByToken", crossOrigin(controller.WithDrawTaskByToken))
-	// ----------------------- 关系表 -------------------------
-	mux.HandleFunc("/workflow/identitylink/findParticipant", crossOrigin(controller.FindParticipantByProcInstID))
-
-	// ******************************** 历史纪录 ***********************************
-	// -------------------------- 流程实例 -------------------------------
-	mux.HandleFunc("/workflow/procHistory/findTask", crossOrigin(controller.FindProcHistory))
-	mux.HandleFunc("/workflow/procHistory/findTaskByToken", crossOrigin(controller.FindProcHistoryByToken))
-	mux.HandleFunc("/workflow/procHistory/startByMyself", crossOrigin(controller.StartHistoryByMyself))   // 查询我启动的流程
-	mux.HandleFunc("/workflow/procHistory/FindProcNotify", crossOrigin(controller.FindProcHistoryNotify)) // 查询抄送我的流程
-	// ----------------------- 关系表 -------------------------
-	mux.HandleFunc("/workflow/identitylinkHistory/findParticipant", crossOrigin(controller.FindParticipantHistoryByProcInstID))
+	mux := router.Mux
 	// 启动数据库连接
 	model.Setup()
 	// 启动redis连接

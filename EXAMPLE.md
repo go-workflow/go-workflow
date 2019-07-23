@@ -25,7 +25,7 @@ docker run  -e DbType=mysql -e DbLogMode=false -e DbName=test -e DbHost=localhos
 
 
 # 2.1 存储流程定义。
-  通过 Post 访问： http://localhost:8080/workflow/procdef/save
+  通过 Post 访问： http://localhost:8080/api/v1/workflow/procdef/save
 
   (参数详解见 ProcessConfig流程定义配置.md)
 
@@ -37,7 +37,7 @@ docker run  -e DbType=mysql -e DbLogMode=false -e DbName=test -e DbHost=localhos
 
 
   ---------------------------------------------------------------
-  或 通过 POST 访问： http://localhost:8080/workflow/procdef/saveByToken (后台通过 token 从redis查询用户信息 userinfo，token可以保存在 Authorization 里
+  或 通过 POST 访问： http://localhost:8080/api/v1/workflow/procdef/saveByToken (后台通过 token 从redis查询用户信息 userinfo，token可以保存在 Authorization 里
   面 或者 reques参数里)
 
 // UserInfo 用户信息
@@ -80,12 +80,12 @@ docker run  -e DbType=mysql -e DbLogMode=false -e DbName=test -e DbHost=localhos
 
 # 2.2 查询流程定义
 
-  通过 POST 访问： http://localhost:8080/workflow/procdef/findAll
+  通过 POST 访问： http://localhost:8080/api/v1/workflow/procdef/findAll
 
   POST参数： {"name": "请假", "company","pageSize": 1, "pageIndex": 1}  , 四个参数皆可为空
 
 # 3.启动流程
-  通过 POST 访问： http://localhost:8080/workflow/process/start
+  通过 POST 访问： http://localhost:8080/api/v1/workflow/process/start
 
   POST参数：
 
@@ -132,7 +132,7 @@ docker run  -e DbType=mysql -e DbLogMode=false -e DbName=test -e DbHost=localhos
 
 # 5.1 查询我审批的流程
 
-  通过POST访问： http://localhost:8080/workflow/procHistory/findTask
+  通过POST访问： http://localhost:8080/api/v1/workflow/procHistory/findTask
 
   POST参数：{"userID":"admin","company":"A公司","pageIndex":1,"pageSize":2}
 
@@ -142,13 +142,13 @@ docker run  -e DbType=mysql -e DbLogMode=false -e DbName=test -e DbHost=localhos
 
 -----------查询已经结束的流程--------
 
-  通过POST访问： http://localhost:8080/workflow/procHistory/startByMyself
+  通过POST访问： http://localhost:8080/api/v1/workflow/procHistory/startByMyself
 
   POST参数： {"userID":"admin","company":"A公司","pageIndex":1,"pageSize":2}
 
 -----------查询正在审批的流程--------
 
-  通过POST访问： http://localhost:8080/workflow/process/startByMyself
+  通过POST访问： http://localhost:8080/api/v1/workflow/process/startByMyself
 
   POST参数： {"userID":"admin","company":"A公司","pageIndex":1,"pageSize":2}
 
@@ -156,7 +156,7 @@ docker run  -e DbType=mysql -e DbLogMode=false -e DbName=test -e DbHost=localhos
 
 ------------------ 审批中 ------------------------
 
-  通过POST访问： http://localhost:8080/workflow/process/FindProcNotify
+  通过POST访问： http://localhost:8080/api/v1/workflow/process/FindProcNotify
 
   POST参数：{"userID":"admin","company":"A公司","groups":["人事","产品经理"]}
 

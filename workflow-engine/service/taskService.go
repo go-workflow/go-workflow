@@ -192,13 +192,13 @@ func WithDrawTaskByToken(token string, receiver *TaskReceiver) error {
 		return err
 	}
 	if len(userinfo.ID) == 0 {
-		return errors.New("用户名 ID 不能为空！！")
+		return errors.New("保存在redis中的【用户信息 userinfo】字段 ID 不能为空！！")
 	}
 	if len(userinfo.Username) == 0 {
-		return errors.New("用户名 username 不能为空！！")
+		return errors.New("保存在redis中的【用户信息 userinfo】字段 username 不能为空！！")
 	}
 	if len(userinfo.Company) == 0 {
-		return errors.New("公司 company 不能为空")
+		return errors.New("保存在redis中的【用户信息 userinfo】字段 company 不能为空")
 	}
 	return WithDrawTask(receiver.TaskID, receiver.ProcInstID, userinfo.ID, userinfo.Username, userinfo.Company, receiver.Comment)
 }
