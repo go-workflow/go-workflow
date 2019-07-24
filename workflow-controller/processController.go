@@ -73,6 +73,10 @@ func StartProcessInstance(writer http.ResponseWriter, request *http.Request) {
 		util.Response(writer, "启动流程的用户userId不能为空", false)
 		return
 	}
+	if len(proc.Username) == 0 {
+		util.Response(writer, "启动流程的用户username不能为空", false)
+		return
+	}
 	if len(proc.Department) == 0 {
 		util.Response(writer, "用户所在部门department不能为空", false)
 		return
