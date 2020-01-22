@@ -97,9 +97,12 @@ type NodeCondition struct {
 	ParamLabel string `json:"paramLabel,omitempty"`
 	IsEmpty    bool   `json:"isEmpty,omitempty"`
 	// 类型为range
-	LowerBound string `json:"lowerBound,omitempty"`
-	UpperBound string `json:"upperBound,omitempty"`
-	Unit       string `json:"unit,omitempty"`
+	LowerBound      string `json:"lowerBound,omitempty"`
+	LowerBoundEqual string `json:"lowerBoundEqual,omitempty"`
+	UpperBoundEqual string `json:"upperBoundEqual,omitempty"`
+	UpperBound      string `json:"upperBound,omitempty"`
+	BoundEqual      string `json:"boundEqual,omitempty"`
+	Unit            string `json:"unit,omitempty"`
 	// 类型为 value
 	ParamValues []string    `json:"paramValues,omitempty"`
 	OriValue    []string    `json:"oriValue,omitempty"`
@@ -122,6 +125,7 @@ type NodeInfo struct {
 	Aprover     string `json:"approver"`
 	AproverType string `json:"aproverType"`
 	MemberCount int8   `json:"memberCount"`
+	Level       int8   `json:"level"`
 	ActType     string `json:"actType"`
 }
 
@@ -395,16 +399,26 @@ func checkConditions(cond *NodeCondition, value string) (bool, error) {
 		if err != nil {
 			return false, err
 		}
-		if len(cond.LowerBound) == 0 && len(cond.UpperBound) == 0 {
+		if len(cond.LowerBound) == 0 && len(cond.UpperBound) == 0 && len(cond.LowerBoundEqual) == 0 && len(cond.UpperBoundEqual) == 0 && len(cond.BoundEqual) == 0 {
 			return false, errors.New("条件【" + cond.Type + "】的上限或者下限值不能全为空")
 		}
-		// 判断下限，lowerBound包含等于
+		// 判断下限，lowerBound
 		if len(cond.LowerBound) > 0 {
 			low, err := strconv.Atoi(cond.LowerBound)
 			if err != nil {
 				return false, err
 			}
-			if val < low {
+			if val <= low {
+				// fmt.Printf("val:%d小于lowerBound:%d\n", val, low)
+				return false, nil
+			}
+		}
+		if len(cond.LowerBoundEqual) > 0 {
+			le, err := strconv.Atoi(cond.LowerBoundEqual)
+			if err != nil {
+				return false, err
+			}
+			if val < le {
 				// fmt.Printf("val:%d小于lowerBound:%d\n", val, low)
 				return false, nil
 			}
@@ -415,8 +429,25 @@ func checkConditions(cond *NodeCondition, value string) (bool, error) {
 			if err != nil {
 				return false, err
 			}
-			if val > upper {
-				// fmt.Printf("val:%d大于upperBound:%d\n", val, upper)
+			if val >= upper {
+				return false, nil
+			}
+		}
+		if len(cond.UpperBoundEqual) > 0 {
+			ge, err := strconv.Atoi(cond.UpperBoundEqual)
+			if err != nil {
+				return false, err
+			}
+			if val > ge {
+				return false, nil
+			}
+		}
+		if len(cond.BoundEqual) > 0 {
+			equal, err := strconv.Atoi(cond.BoundEqual)
+			if err != nil {
+				return false, err
+			}
+			if val != equal {
 				return false, nil
 			}
 		}
