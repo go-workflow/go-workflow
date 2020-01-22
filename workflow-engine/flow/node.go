@@ -398,7 +398,7 @@ func checkConditions(cond *NodeCondition, value string) (bool, error) {
 		if len(cond.LowerBound) == 0 && len(cond.UpperBound) == 0 {
 			return false, errors.New("条件【" + cond.Type + "】的上限或者下限值不能全为空")
 		}
-		// 判断下限
+		// 判断下限，lowerBound包含等于
 		if len(cond.LowerBound) > 0 {
 			low, err := strconv.Atoi(cond.LowerBound)
 			if err != nil {
@@ -409,7 +409,7 @@ func checkConditions(cond *NodeCondition, value string) (bool, error) {
 				return false, nil
 			}
 		}
-		// 判断上限
+		// 判断上限,upperBound包含等于
 		if len(cond.UpperBound) > 0 {
 			upper, err := strconv.Atoi(cond.UpperBound)
 			if err != nil {

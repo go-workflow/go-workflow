@@ -18,6 +18,8 @@
 
 <p>go-workflow 是一个超轻量级的工作流引擎,基本架构同Activiti工作流有些相似，但是它更精简，更轻量，它是一个工作流微服务，具体案例详见：example.md</p>
 
+前端流程生成工具：https://github.com/go-workflow/go-workflow-UI
+
 # 一、特点：
 
   1.它是一个工作流微服务
